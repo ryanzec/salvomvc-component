@@ -37,7 +37,7 @@ data_source:
 
 #console configurations
 model_builder:
-  base_source_path: ../../../../../../tests/BarrageTests/Model
+  base_source_path: ../../../../../../../tests/SalvoTests/Barrage/Model
   relational:
     namespaces:
       UnitTest: ./tests/BarrageTests/Model

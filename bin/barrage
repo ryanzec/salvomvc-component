@@ -2,5 +2,5 @@
 <?php
 require(dirname(__FILE__) . '/bootstrap.php');
 
-$console = new \Barrage\Console\Console();
+$console = new \Salvo\Barrage\Console\Console();
 $console->run();

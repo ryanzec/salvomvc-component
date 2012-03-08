@@ -5,9 +5,7 @@ use Salvo\Utility\RegexHelper;
 use SalvoTests\BaseTestCase;
 
 /**
- * Console test suite
- *
- * @todo
+ * RegexHelper test suite
  */
 class RegexHelperTest extends BaseTestCase
 {

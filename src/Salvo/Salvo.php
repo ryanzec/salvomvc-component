@@ -9,9 +9,10 @@
 namespace Salvo;
 
 use Salvo\Utility\ClassHelper;
-
-//need the Yaml component for parsing configuration files
+use Silex\Application;
 use Symfony\Component\Yaml\Yaml;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 
 /**
  * Main Salvo application object
@@ -47,7 +48,7 @@ class Salvo
      * @param $application
      * @param $applicationRootDirectory
      */
-    private function __construct($application, $applicationRootDirectory)
+    private function __construct(Application $application, $applicationRootDirectory)
     {
         self::$applicationRootDirectory = $applicationRootDirectory;
 
@@ -140,8 +141,8 @@ class Salvo
                     //determine the logging level
                     $level = (!empty($settings['level'])) ? 'Monolog\Logger::' . strtoupper($settings['level']) : 'Monolog\Logger::CRITICAL';
                     $level = constant($level);
-                    $logger = new Monolog\Logger($name);
-                    $logger->pushHandler(new Monolog\Handler\StreamHandler($applicationRootDirectory . '/' . $settings['file_path'], $level));
+                    $logger = new Logger($name);
+                    $logger->pushHandler(new StreamHandler($applicationRootDirectory . '/' . $settings['file_path'], $level));
                     return $logger;
                 });
             }
