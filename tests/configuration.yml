@@ -1,0 +1,59 @@
+#data sources
+data_source:
+  default:
+    driver: Mysql
+    host: 127.0.0.1
+    username: root
+    password: password
+    database: mysql
+  custom_port:
+    driver: Mysql
+    host: 127.0.0.1
+    port: 1234
+    username: root
+    password: password
+    database: mysql
+  with_options:
+    driver: Mysql
+    host: 127.0.0.1
+    port: 1235
+    username: root
+    password: password
+    database: mysql
+    options:
+      "PDO::MYSQL_ATTR_READ_DEFAULT_FILE": /etc/test
+  data_source_factory_test:
+    driver: Mysql
+    host: 127.0.0.1
+    username: root
+    password: password
+    database: ut_barrage
+  active_record:
+    driver: Mysql
+    host: 127.0.0.1
+    username: root
+    password: password
+    database: ut_barrage
+
+#console configurations
+model_builder:
+  base_source_path: ../../../../../../tests/BarrageTests/Model
+  relational:
+    namespaces:
+      UnitTest: ./tests/BarrageTests/Model
+    default_namespace: UnitTest\Model
+    databases:
+      ut_barrage:
+        tables:
+          sTaT_useS:
+            alias: stt
+            class_name: Status
+          types:
+            alias: typ
+            class_name: Type
+          users:
+            alias: usr
+            class_name: User
+          UsersTwo:
+            alias: usr2
+            class_name: UserTwo

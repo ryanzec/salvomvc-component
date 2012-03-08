@@ -1,0 +1,33 @@
+model_builder:
+  relational:
+    namespaces:
+      Demo: /var/www/salvomvc/src
+    default_namespace: Demo\Model
+    databases:
+      Security:
+        tables:
+          Permissions:
+            alias: prm
+            class_name: Permission
+          UserGroupPermissions:
+            alias: usrgp
+            class_name: UserGroupPermission
+          UserPermissions:
+            alias: usrp
+            class_name: UserPermission
+          UserGroups:
+            alias: usrg
+            class_name: UserGroup
+          Users:
+            alias: usr
+            class_name: User
+          Systems:
+            alias: sys
+            class_name: System
+          SubSystems:
+            alias: subs
+            class_name: SubSystem
+            joins:
+              Systems:
+                field: systemId
+                join_field: id

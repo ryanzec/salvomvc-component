@@ -1,0 +1,6 @@
+#!/usr/bin/env php
+<?php
+require(dirname(__FILE__) . '/bootstrap.php');
+
+$console = new \Barrage\Console\Console();
+$console->run();

@@ -1,0 +1,8 @@
+#NOTE: this configuration file should really live outside of the web server directories for security purposes
+data_source:
+  default:
+    driver: Mysql
+    host: 127.0.0.1
+    username: root
+    password: password
+    database: Security

@@ -1,0 +1,10 @@
+ut_barrage:
+  types:
+    -
+      id: 1
+      title: none
+      global: 1
+    -
+      id: 2
+      title: some
+      global: 0
