@@ -167,6 +167,12 @@ class Salvo
             }
         }, 1000);
 
+        //make sure the session is saved
+        $application->after(function($event) use ($application)
+        {
+            $application['session']->save();
+        }, -1000);
+
         self::$application = $application;
 
         //apply bootstrap objects

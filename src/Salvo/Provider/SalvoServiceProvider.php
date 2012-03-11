@@ -41,5 +41,7 @@ class SalvoServiceProvider implements ServiceProviderInterface
         }
 
         \Salvo\Barrage\Configuration::load($application['salvo.barrage_console_configuration_file_path']);
+
+        $application['session']->start();
     }
 }
