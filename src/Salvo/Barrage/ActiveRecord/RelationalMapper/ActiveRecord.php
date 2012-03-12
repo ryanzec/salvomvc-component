@@ -463,6 +463,47 @@ abstract class ActiveRecord implements IArrayable
         }
     }
 
+    public static function resolvePrimaryKey($member, $value)
+    {
+        $where = static::getWhereArray(array($member => $value));
+        $data = static::get($where);
+        $dataCount = count($data);
+        $primaryKeyFields = static::$primaryKey;
+        $primaryKey = array();
+
+        switch($dataCount)
+        {
+            case 0:
+                $primaryKey = array();
+                break;
+
+            case 1:
+                $object = $data->seek(0);
+
+                foreach($primaryKeyFields as $member)
+                {
+                    $primaryKey = array
+                    (
+                        $member => $object->$member
+                    );
+                }
+                break;
+
+            default:
+                if($dataCount > 1)
+                {
+                    throw new \Exception("Can't resolve when passed data returns more than 1 record");
+                }
+                else
+                {
+                    throw new \Exception("Unknown error resolving primary key");
+                }
+                break;
+        }
+
+        return $primaryKey;
+    }
+
     /**
      * Helper function for inserting data from this object into the database
      *
@@ -669,7 +710,7 @@ abstract class ActiveRecord implements IArrayable
      * Returns an instance of a relational data source
      *
      * @static
-     * @return Barrage\DataSource\Relational\IDataSource
+     * @return Salvo\Barrage\DataSource\Relational\IDataSource
      */
     private static function getDataSourceInstance()
     {
