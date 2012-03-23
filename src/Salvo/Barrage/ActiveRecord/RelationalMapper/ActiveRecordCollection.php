@@ -56,7 +56,7 @@ class ActiveRecordCollection implements \Countable, \SeekableIterator
      *
      * @param $position
      *
-     * @return mixed
+     * @return ActiveRecord
      */
     public function seek($position)
     {

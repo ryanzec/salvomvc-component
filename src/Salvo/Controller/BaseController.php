@@ -15,6 +15,7 @@ use Symfony\Component\Yaml\Yaml;
 use Salvo\Utility\RegexHelper;
 use Salvo\Utility\ClassHelper;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * The base controller all other Salvo controller should extend from
@@ -64,6 +65,8 @@ class BaseController implements ControllerProviderInterface
      * @var array
      */
     private $javascriptFiles = array();
+
+    private $httpStatusCode = 200;
 
     /**
      * The name full name of the model to be used with the built-in rest functionality to provide basic create, read, update, delete and listing functionality
@@ -227,6 +230,11 @@ class BaseController implements ControllerProviderInterface
         return $this->restObjectNamePlural;
     }
 
+    protected function setHttpStatusCode($value)
+    {
+        $this->httpStatusCode = $value;
+    }
+
     /**
      * Sets the override layout template
      *
@@ -245,6 +253,11 @@ class BaseController implements ControllerProviderInterface
     protected function unsetOverrideLayoutTemplate()
     {
         $this->overrideLayoutTemplate = null;
+    }
+
+    private function renderResponse($content)
+    {
+        return new Response($content, $this->httpStatusCode);
     }
 
     /**
@@ -280,7 +293,7 @@ class BaseController implements ControllerProviderInterface
             $templatePath = $templatePathOverride;
         }
 
-        return self::$twig->render($templatePath . '.twig', $data);
+        return $this->renderResponse(self::$twig->render($templatePath . '.twig', $data));
     }
 
     /**
@@ -291,7 +304,7 @@ class BaseController implements ControllerProviderInterface
      */
     protected function renderJson($data = array())
     {
-        return json_encode($data);
+        return $this->renderResponse(json_encode($data));
     }
 
     /**

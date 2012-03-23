@@ -98,6 +98,8 @@ class ModelBuilder extends Console\Command\Command
                 if(isset($tableConfiguration[$table]))
                 {
                     $classDefault = (!empty($tableConfiguration[$table]['class_name'])) ? $tableConfiguration[$table]['class_name'] : null;
+
+                    //todo: add in the ability to get class name during this process if one if not set
                     $class = ($options['default'] === true) ? $classDefault : $options['class'];
 
                     if(!empty($class))

@@ -108,14 +108,14 @@ abstract class ActiveRecord implements IArrayable
         {
             if(is_array($primaryKey))
             {
-                foreach(static::$primaryKey as $keyPart => $value)
+                foreach(static::$primaryKey as $keyPart)
                 {
-                    if(empty($primaryKey[$keyPart]))
+                    if(!isset($primaryKey[$keyPart]))
                     {
                         throw new ActiveRecordException("Missing value for '{$keyPart}' with loading active record object by primary key");
                     }
 
-                    $this->$keyPart = $value;
+                    $this->$keyPart = $primaryKey[$keyPart];
                 }
             }
             else if(count(static::$primaryKey) === 1)
@@ -289,7 +289,7 @@ abstract class ActiveRecord implements IArrayable
      * @param null $limit
      * @param int $offset
      *
-     * @return ActiveRecordCollection
+     * @return ActiveRecordCollection Collection of active record objects
      */
     public static function get($where = array(), $joins = array(), $group = array(), $order = array(), $limit = null, $offset = 0)
     {
@@ -323,6 +323,12 @@ abstract class ActiveRecord implements IArrayable
         }
 
         return new ActiveRecordCollection($objects);
+    }
+
+    public static function getOne($where = array(), $joins = array(), $group = array(), $order = array())
+    {
+        $collection = static::get($where, $joins, $group, $order, 1);
+        return ($collection->count() == 1) ? $collection->seek(0) : null;
     }
 
     /**
@@ -505,6 +511,16 @@ abstract class ActiveRecord implements IArrayable
     }
 
     /**
+     * Helper function to determine when persisting, if we should insert or update
+     *
+     * @return bool Whether this record is new
+     */
+    public function isNew()
+    {
+        return $this->dataSourceStatus == 'new';
+    }
+
+    /**
      * Helper function for inserting data from this object into the database
      *
      * @return void
@@ -588,27 +604,6 @@ abstract class ActiveRecord implements IArrayable
         {
             throw new ActiveRecordException('No fields are set for ' . get_called_class() . '.');
         }
-    }
-
-    /**
-     * Helper function to determine when persisting, if we should insert or update
-     *
-     * @return bool Whether this record is new
-     */
-    private function isNew()
-    {
-        $isNew = false;
-
-        foreach(static::$primaryKey as $keyPart)
-        {
-            if(empty($this->$keyPart))
-            {
-                $isNew = true;
-                break;
-            }
-        }
-
-        return $isNew;
     }
 
     /**
