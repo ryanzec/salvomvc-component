@@ -18,6 +18,8 @@ use Salvo\Barrage\DataSource\Relational\Exception\RelationalSqlException;
  */
 class DataSource extends BaseDataSource
 {
+    protected static $displayQueries = false;
+
     /**
      * Generates a sql call for selecting data
      * NOTE: This is designed to be used with the active record system and while this can build relatively complex queries it is recommended you build
@@ -42,6 +44,7 @@ class DataSource extends BaseDataSource
         foreach($select as $field => $table)
         {
             $fieldAlias = null;
+            $fieldHasTable = false;
 
             if(stripos($field, ' AS ') !== false)
             {
@@ -51,7 +54,17 @@ class DataSource extends BaseDataSource
                 $fieldAlias = $fieldParts[1];
             }
 
-            $tableAlias = $this->getTableAlias($table, $from, $join);
+            if(strpos($field, '.') !== false)
+            {
+                $fieldParts = explode('.', $field, 2);
+                $tableAlias = $fieldParts[0];
+                $field = $fieldParts[1];
+                $fieldHasTable = true;
+            }
+            else
+            {
+                $tableAlias = $this->getTableAlias($table, $from, $join);
+            }
 
             if(!empty($selectStatement))
             {
@@ -64,7 +77,14 @@ class DataSource extends BaseDataSource
             }
             else
             {
-                $selectStatement .= "{$field} AS `{$fieldAlias}`";
+                if(!empty($tableAlias) && $fieldHasTable)
+                {
+                    $selectStatement .= "{$tableAlias}.{$field} AS `{$fieldAlias}`";
+                }
+                else
+                {
+                    $selectStatement .= "{$field} AS `{$fieldAlias}`";
+                }
             }
         }
 
@@ -74,7 +94,7 @@ class DataSource extends BaseDataSource
             throw new RelationalSqlException("From configuration miss either database ({$from['name']}) or table name ({$from['database']})");
         }
 
-        $defaultDatabase = $from['database'];
+        $defaultDatabase = \Salvo\Barrage\Configuration::getRealDatabaseName($from['database']);
         $fromAlias = $this->getTableAlias($from['name'], $from, $join);
         $fromStatement = "`{$defaultDatabase}`.`{$from['name']}` AS `{$fromAlias}`";
 
@@ -92,6 +112,7 @@ class DataSource extends BaseDataSource
 
                 $tableAlias = $this->getTableAlias($table, $from, $join);
                 $database = (empty($options['database'])) ? $defaultDatabase : $options['database'];
+                $database = \Salvo\Barrage\Configuration::getRealDatabaseName($database);
                 $type = (!empty($options['type'])) ? $options['type'] : 'inner';
 
                 $joinStatement .= " " . strtoupper($type) . " JOIN `{$database}`.`{$table}` AS `{$tableAlias}` ON {$options['on']}";
@@ -263,7 +284,7 @@ class DataSource extends BaseDataSource
      */
     function simpleInsertBuilder($table, $data, $database = null)
     {
-        $database = (!empty($database)) ? $database : $this->defaultDatabase;
+        $database = $this->getDatabaseName($database);
         $fields = null;
         $values = null;
 
@@ -290,7 +311,7 @@ class DataSource extends BaseDataSource
      */
     function simpleUpdateBuilder($table, $data, $where, $database = null)
     {
-        $database = (!empty($database)) ? $database : $this->defaultDatabase;
+        $database = $this->getDatabaseName($database);
         $set = null;
 
         foreach($data as $field => $value)
@@ -326,7 +347,7 @@ class DataSource extends BaseDataSource
      */
     public function delete($table, $where, $database = null)
     {
-        $database = (!empty($database)) ? $database : $this->defaultDatabase;
+        $database = $this->getDatabaseName($database);
         $sql = "DELETE FROM {$database}.{$table}
                 WHERE {$where}";
 
@@ -470,7 +491,7 @@ class DataSource extends BaseDataSource
         if(is_array($options) && (!empty($options['value']) || $options['value'] === null))
         {
             $condition = (!empty($options['condition'])) ? $options['condition'] : '=';
-            $alias = (!empty($options['database'])) ? $options['database'] : $fromAlias;
+            $alias = (!empty($options['database'])) ? \Salvo\Barrage\Configuration::getRealDatabaseName($options['database']) : $fromAlias;
             $value = $options['value'];
 
             if(!$this->validateWhereCondition($condition))
@@ -595,7 +616,7 @@ class DataSource extends BaseDataSource
      */
     public function getTableFieldsDetails($table, $database = null)
     {
-        $database = (!empty($database)) ? $database : $this->defaultDatabase;
+        $database = $this->getDatabaseName($database);
 
         $sql = "DESCRIBE {$database}.{$table}";
         $tempData = $this->query($sql);
@@ -717,6 +738,8 @@ class DataSource extends BaseDataSource
      */
     public function getCreateStatement($table, $asLineArray = false, $database = null)
     {
+        $database = $this->getDatabaseName($database);
+
         $query = "SHOW CREATE TABLE {$database}.{$table}";
         $statement = $this->getRow($query);
         $statement = $statement['Create Table'];
@@ -746,7 +769,7 @@ class DataSource extends BaseDataSource
      */
     public function getIndexes($tableName, $fieldName = null, $database = null)
     {
-        $database = (!empty($database)) ? $database : $this->defaultDatabase;
+        $database = $this->getDatabaseName($database);
 
 		$query = "SHOW INDEXES FROM {$database}.{$tableName}";
 
@@ -822,7 +845,7 @@ class DataSource extends BaseDataSource
      */
     public function getTables($database = null)
     {
-        $database = (!empty($database)) ? $database : $this->defaultDatabase;
+        $database = $this->getDatabaseName($database);
 
 		$query = "SHOW TABLES FROM {$database}";
 		return $this->getColumn($query);

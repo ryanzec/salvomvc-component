@@ -5,7 +5,7 @@ use Symfony\Component\Yaml\Yaml;
 
 abstract class PdoTestCase extends \PHPUnit_Framework_TestCase
 {
-    protected $debug = true;
+    protected $debug = false;
 
     private $schema;
 

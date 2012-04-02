@@ -74,6 +74,8 @@ abstract class BaseDataSource implements IDataSource
      */
     private static $instances;
 
+    protected static $displayQueries = false;
+
     /**
      * Setup the PDO connection with the passed configuration
      *
@@ -366,10 +368,17 @@ abstract class BaseDataSource implements IDataSource
      *
      * @param $sql string The sql to store
      *
+     * todo: add functionality to be able to show queries as they run
+     *
      * @return void
      */
     private function setSql($sql)
     {
+        if(static::$displayQueries === true)
+        {
+            var_dump($sql);
+        }
+
         $this->sql = $sql;
         return true;
     }
@@ -460,5 +469,22 @@ abstract class BaseDataSource implements IDataSource
     protected function validateWhereLogic($logic)
     {
         return in_array($logic, self::$validWhereLogic);
+    }
+
+    protected function getDatabaseName($database)
+    {
+        $database = (!empty($database)) ? $database : $this->defaultDatabase;
+        //return $database;
+        return \Salvo\Barrage\Configuration::getRealDatabaseName($database);
+    }
+
+    public static function displayQueries()
+    {
+        static::$displayQueries = true;
+    }
+
+    public static function hideQueries()
+    {
+        static::$displayQueries = false;
     }
 }

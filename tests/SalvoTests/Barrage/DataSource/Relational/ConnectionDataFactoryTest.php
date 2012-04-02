@@ -11,7 +11,7 @@ class ConnectionDataFactoyTest extends \SalvoTests\Barrage\BaseTestCase
      */
     public function buildFromConfigurationMysql()
     {
-        $configurationName = 'default';
+        $configurationName = 'ct_default';
         $connectionData = ConnectionDataFactory::buildFromConfiguration($configurationName);
 
         $this->assertSame(true, $connectionData instanceof Mysql\ConnectionData);
@@ -27,7 +27,7 @@ class ConnectionDataFactoyTest extends \SalvoTests\Barrage\BaseTestCase
      */
     public function buildFromConfigurationMysqlWithcustom_portMysql()
     {
-        $configurationName = 'custom_port';
+        $configurationName = 'ct_custom_port';
         $connectionData = ConnectionDataFactory::buildFromConfiguration($configurationName);
 
         $this->assertSame(true, $connectionData instanceof Mysql\ConnectionData);
@@ -43,7 +43,7 @@ class ConnectionDataFactoyTest extends \SalvoTests\Barrage\BaseTestCase
      */
     public function buildFromConfigurationMysqlWithcustom_portOptionsMysql()
     {
-        $configurationName = 'with_options';
+        $configurationName = 'ct_with_options';
         $connectionData = ConnectionDataFactory::buildFromConfiguration($configurationName);
 
         $this->assertSame(true, $connectionData instanceof Mysql\ConnectionData);

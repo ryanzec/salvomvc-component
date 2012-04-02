@@ -89,7 +89,7 @@ class ConnectionData implements IConnectionData
         $this->host = $host;
         $this->username = $username;
         $this->password = $password;
-        $this->database = $database;
+        $this->database = \Salvo\Barrage\Configuration::getRealDatabaseName($database);
         $this->port = (!empty($port)) ? $port : self::DEFAULT_PORT;
 
         $convertedOptions = array();

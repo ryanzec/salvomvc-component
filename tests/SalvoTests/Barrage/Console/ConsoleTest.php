@@ -52,7 +52,7 @@ class ConsoleTest extends BaseTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->modelDirectory =  __DIR__ . '/../Model/UnitTest/Model/ut_barrage';
+        $this->modelDirectory =  __DIR__ . '/../Model/UnitTest/Model/barrage';
     }
 
     /**
@@ -79,7 +79,7 @@ class ConsoleTest extends BaseTestCase
         (
             'table' => null,
             '-d' => true,
-            '--database' => 'ut_barrage'
+            '--database' => 'barrage'
         );
 
         $input = new ArrayInput($arguments);
@@ -87,7 +87,7 @@ class ConsoleTest extends BaseTestCase
 
         $statusExceptedClass =
 "<?php
-namespace UnitTest\\Model\\ut_barrage;
+namespace UnitTest\\Model\\barrage;
 
 use Salvo\\Barrage\\ActiveRecord\\RelationalMapper\\ActiveRecord;
 
@@ -99,7 +99,7 @@ class Status extends ActiveRecord
      *
      * @ActiveRecordStart
      */
-    protected static \$database = 'ut_barrage';
+    protected static \$database = 'barrage';
     protected static \$primaryKey = array('ID');
     protected static \$autoIncrementedField = 'ID';
     protected static \$table = array('name'=>'sTaT_useS','alias'=>'stt');
@@ -114,7 +114,7 @@ class Status extends ActiveRecord
 
         $typeExceptedClass =
 "<?php
-namespace UnitTest\\Model\\ut_barrage;
+namespace UnitTest\\Model\\barrage;
 
 use Salvo\\Barrage\\ActiveRecord\\RelationalMapper\\ActiveRecord;
 
@@ -126,7 +126,7 @@ class Type extends ActiveRecord
      *
      * @ActiveRecordStart
      */
-    protected static \$database = 'ut_barrage';
+    protected static \$database = 'barrage';
     protected static \$primaryKey = array('id');
     protected static \$autoIncrementedField = 'id';
     protected static \$table = array('name'=>'types','alias'=>'typ');
@@ -141,7 +141,7 @@ class Type extends ActiveRecord
 
         $userExceptedClass =
 "<?php
-namespace UnitTest\\Model\\ut_barrage;
+namespace UnitTest\\Model\\barrage;
 
 use Salvo\\Barrage\\ActiveRecord\\RelationalMapper\\ActiveRecord;
 
@@ -153,7 +153,7 @@ class User extends ActiveRecord
      *
      * @ActiveRecordStart
      */
-    protected static \$database = 'ut_barrage';
+    protected static \$database = 'barrage';
     protected static \$primaryKey = array('id');
     protected static \$autoIncrementedField = 'id';
     protected static \$table = array('name'=>'users','alias'=>'usr');
@@ -168,7 +168,7 @@ class User extends ActiveRecord
 
         $userTwoExceptedClass =
 "<?php
-namespace UnitTest\\Model\\ut_barrage;
+namespace UnitTest\\Model\\barrage;
 
 use Salvo\\Barrage\\ActiveRecord\\RelationalMapper\\ActiveRecord;
 
@@ -180,7 +180,7 @@ class UserTwo extends ActiveRecord
      *
      * @ActiveRecordStart
      */
-    protected static \$database = 'ut_barrage';
+    protected static \$database = 'barrage';
     protected static \$primaryKey = array('id');
     protected static \$autoIncrementedField = 'id';
     protected static \$table = array('name'=>'UsersTwo','alias'=>'usr2');

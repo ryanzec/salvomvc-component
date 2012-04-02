@@ -12,8 +12,10 @@ use Salvo\Barrage\Configuration;
  */
 class DataSourceTest extends BaseTestCase
 {
-    private $database1 = 'ut_barrage';
-    private $database2 = 'ut_barrage_test';
+    private $database1 = 'barrage';
+    private $database2 = 'barrage_test';
+    private $trueDatabase1 = null;
+    private $trueDatabase2 = null;
 
     /**
      * @var Mysql\DataSource
@@ -21,15 +23,25 @@ class DataSourceTest extends BaseTestCase
     private $databaseConnection;
     private $databaseConnectionData;
     private $databaseConnectionData2;
-    
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->trueDatabase1 = Configuration::getRealDatabaseName($this->database1);
+        $this->trueDatabase2 = Configuration::getRealDatabaseName($this->database2);
+    }
+
     public function setup()
     {
+
+
         parent::setUp();
         
         //lets initially connect to the mysql data since that is guaranteed to exist
         $host = '127.0.0.1';
         $username = 'root';
-        $password = 'password';
+        $password = '';
         $database = $this->database1;
 
         $this->databaseConnectionData = new Mysql\ConnectionData($host, $username, $password, $database);
@@ -234,7 +246,7 @@ class DataSourceTest extends BaseTestCase
 
 
         $sql = "SELECT *
-                FROM {$this->database2}.{$table}
+                FROM {$this->trueDatabase2}.{$table}
                 WHERE id = '{$newId}'";
         $newRecord = $this->databaseConnection->getRow($sql);
 
@@ -266,7 +278,7 @@ class DataSourceTest extends BaseTestCase
         );
 
         $results = $this->databaseConnection->simpleSelectBuilder($select, $from);
-        $excepted = "SELECT `users`.`id`, `users`.`username`, `users`.`password` FROM `{$this->database1}`.`users` AS `users`";
+        $excepted = "SELECT `users`.`id`, `users`.`username`, `users`.`password` FROM `{$this->trueDatabase1}`.`users` AS `users`";
 
         $this->assertEquals($excepted, $results);
     }
@@ -290,7 +302,7 @@ class DataSourceTest extends BaseTestCase
         );
 
         $results = $this->databaseConnection->simpleSelectBuilder($select, $from);
-        $excepted = "SELECT `users`.`id`, `users`.`username`, password AS `user_password` FROM `{$this->database1}`.`users` AS `users`";
+        $excepted = "SELECT `users`.`id`, `users`.`username`, password AS `user_password` FROM `{$this->trueDatabase1}`.`users` AS `users`";
 
         $this->assertEquals($excepted, $results);
     }
@@ -331,7 +343,7 @@ class DataSourceTest extends BaseTestCase
         );
 
         $results = $this->databaseConnection->simpleSelectBuilder($select, $from, $join);
-        $excepted = "SELECT `usr`.`id`, `usr`.`username`, `usr`.`password`, types.title AS `type_title`, stt.title AS `status_title` FROM `{$this->database1}`.`users` AS `usr` LEFT JOIN `{$this->database1}`.`types` AS `types` ON `types`.`id` = `usr`.`type_id` INNER JOIN `test`.`statuses` AS `stt` ON `stt`.`id` = `usr`.`status_id`";
+        $excepted = "SELECT `usr`.`id`, `usr`.`username`, `usr`.`password`, types.title AS `type_title`, stt.title AS `status_title` FROM `{$this->trueDatabase1}`.`users` AS `usr` LEFT JOIN `{$this->trueDatabase1}`.`types` AS `types` ON `types`.`id` = `usr`.`type_id` INNER JOIN `test`.`statuses` AS `stt` ON `stt`.`id` = `usr`.`status_id`";
 
         $this->assertEquals($excepted, $results);
     }
@@ -360,7 +372,7 @@ class DataSourceTest extends BaseTestCase
         );
 
         $results = $this->databaseConnection->simpleSelectBuilder($select, $from, null, $where);
-        $excepted = "SELECT `users`.`id`, `users`.`username`, password AS `user_password` FROM `{$this->database1}`.`users` AS `users` WHERE (`users`.`id` = '1') AND (`users`.`username` = 'test')";
+        $excepted = "SELECT `users`.`id`, `users`.`username`, password AS `user_password` FROM `{$this->trueDatabase1}`.`users` AS `users` WHERE (`users`.`id` = '1') AND (`users`.`username` = 'test')";
 
         $this->assertEquals($excepted, $results);
     }
@@ -418,7 +430,7 @@ class DataSourceTest extends BaseTestCase
         );
 
         $results = $this->databaseConnection->simpleSelectBuilder($select, $from, null, $where);
-        $excepted = "SELECT `users`.`id`, `users`.`username`, password AS `user_password` FROM `{$this->database1}`.`users` AS `users` WHERE (`users`.`username` = 'test') AND (`users`.`id` IN('1', '2', '3')) AND (`users`.`id2` != '123') AND (`users`.`id3` LIKE '%test%') AND (`users`.`id4` >= '10') AND (`users`.`id5` BETWEEN '1' AND '100') AND (`users`.`id6` IS NOT NULL) AND (`users`.`id7` IS NULL)";
+        $excepted = "SELECT `users`.`id`, `users`.`username`, password AS `user_password` FROM `{$this->trueDatabase1}`.`users` AS `users` WHERE (`users`.`username` = 'test') AND (`users`.`id` IN('1', '2', '3')) AND (`users`.`id2` != '123') AND (`users`.`id3` LIKE '%test%') AND (`users`.`id4` >= '10') AND (`users`.`id5` BETWEEN '1' AND '100') AND (`users`.`id6` IS NOT NULL) AND (`users`.`id7` IS NULL)";
 
         $this->assertEquals($excepted, $results);
     }
@@ -515,7 +527,7 @@ class DataSourceTest extends BaseTestCase
         );
 
         $results = $this->databaseConnection->simpleSelectBuilder($select, $from, null, $where);
-        $excepted = "SELECT `users`.`id`, `users`.`username`, password AS `user_password` FROM `{$this->database1}`.`users` AS `users` WHERE (`users`.`username` = 'test' AND `users`.`id` IN('1', '2', '3')) AND (`users`.`id2` != '123' OR `users`.`id3` LIKE '%test%') AND (`users`.`id4` >= '10' OR `users`.`id5` BETWEEN '1' AND '100' OR `users`.`id6` NOT IN('1', '100') OR `users`.`id6_2` IS NULL) AND (`users`.`id7` BETWEEN '1' AND '100' OR `users`.`id8` BETWEEN '1' AND '100' OR `users`.`id8_2` IS NOT NULL)";
+        $excepted = "SELECT `users`.`id`, `users`.`username`, password AS `user_password` FROM `{$this->trueDatabase1}`.`users` AS `users` WHERE (`users`.`username` = 'test' AND `users`.`id` IN('1', '2', '3')) AND (`users`.`id2` != '123' OR `users`.`id3` LIKE '%test%') AND (`users`.`id4` >= '10' OR `users`.`id5` BETWEEN '1' AND '100' OR `users`.`id6` NOT IN('1', '100') OR `users`.`id6_2` IS NULL) AND (`users`.`id7` BETWEEN '1' AND '100' OR `users`.`id8` BETWEEN '1' AND '100' OR `users`.`id8_2` IS NOT NULL)";
 
         $this->assertEquals($excepted, $results);
     }
@@ -620,7 +632,7 @@ class DataSourceTest extends BaseTestCase
         );
 
         $results = $this->databaseConnection->simpleSelectBuilder($select, $from, $join, $where);
-        $excepted = "SELECT `users`.`id`, `users`.`username`, password AS `user_password` FROM `{$this->database1}`.`users` AS `users` LEFT JOIN `{$this->database1}`.`types` AS `types` ON `types`.`id` = `usr`.`type_id` INNER JOIN `test`.`statuses` AS `stt` ON `stt`.`id` = `usr`.`status_id` WHERE (`users`.`username` = 'test' AND `users`.`id` IN('1', '2', '3')) AND (`users`.`id2` != '123' OR `users`.`id3` LIKE '%test%') AND (`users`.`id4` >= '10' OR `users`.`id5` BETWEEN '1' AND '100' OR `users`.`id6` NOT IN('1', '100')) AND (`users`.`id7` BETWEEN '1' AND '100' OR `users`.`id8` BETWEEN '1' AND '100')";
+        $excepted = "SELECT `users`.`id`, `users`.`username`, password AS `user_password` FROM `{$this->trueDatabase1}`.`users` AS `users` LEFT JOIN `{$this->trueDatabase1}`.`types` AS `types` ON `types`.`id` = `usr`.`type_id` INNER JOIN `test`.`statuses` AS `stt` ON `stt`.`id` = `usr`.`status_id` WHERE (`users`.`username` = 'test' AND `users`.`id` IN('1', '2', '3')) AND (`users`.`id2` != '123' OR `users`.`id3` LIKE '%test%') AND (`users`.`id4` >= '10' OR `users`.`id5` BETWEEN '1' AND '100' OR `users`.`id6` NOT IN('1', '100')) AND (`users`.`id7` BETWEEN '1' AND '100' OR `users`.`id8` BETWEEN '1' AND '100')";
 
         $this->assertEquals($excepted, $results);
     }
@@ -732,7 +744,7 @@ class DataSourceTest extends BaseTestCase
         );
 
         $results = $this->databaseConnection->simpleSelectBuilder($select, $from, $join, $where, $group);
-        $excepted = "SELECT `users`.`id`, `users`.`username`, password AS `user_password` FROM `{$this->database1}`.`users` AS `users` LEFT JOIN `{$this->database1}`.`types` AS `types` ON `types`.`id` = `usr`.`type_id` INNER JOIN `test`.`statuses` AS `stt` ON `stt`.`id` = `usr`.`status_id` WHERE (`users`.`username` = 'test' AND `users`.`id` IN('1', '2', '3')) AND (`users`.`id2` != '123' OR `users`.`id3` LIKE '%test%') AND (`users`.`id4` >= '10' OR `users`.`id5` BETWEEN '1' AND '100' OR `users`.`id6` NOT IN('1', '100')) AND (`users`.`id7` BETWEEN '1' AND '100' OR `users`.`id8` BETWEEN '1' AND '100') GROUP BY `users`.`id1`, `types`.`id2`, `users`.`id3`, `types`.`id4`";
+        $excepted = "SELECT `users`.`id`, `users`.`username`, password AS `user_password` FROM `{$this->trueDatabase1}`.`users` AS `users` LEFT JOIN `{$this->trueDatabase1}`.`types` AS `types` ON `types`.`id` = `usr`.`type_id` INNER JOIN `test`.`statuses` AS `stt` ON `stt`.`id` = `usr`.`status_id` WHERE (`users`.`username` = 'test' AND `users`.`id` IN('1', '2', '3')) AND (`users`.`id2` != '123' OR `users`.`id3` LIKE '%test%') AND (`users`.`id4` >= '10' OR `users`.`id5` BETWEEN '1' AND '100' OR `users`.`id6` NOT IN('1', '100')) AND (`users`.`id7` BETWEEN '1' AND '100' OR `users`.`id8` BETWEEN '1' AND '100') GROUP BY `users`.`id1`, `types`.`id2`, `users`.`id3`, `types`.`id4`";
 
         $this->assertEquals($excepted, $results);
     }
@@ -851,7 +863,7 @@ class DataSourceTest extends BaseTestCase
         );
 
         $results = $this->databaseConnection->simpleSelectBuilder($select, $from, $join, $where, $group, $order);
-        $excepted = "SELECT `users`.`id`, `users`.`username`, password AS `user_password` FROM `{$this->database1}`.`users` AS `users` LEFT JOIN `{$this->database1}`.`types` AS `types` ON `types`.`id` = `usr`.`type_id` INNER JOIN `test`.`statuses` AS `stt` ON `stt`.`id` = `usr`.`status_id` WHERE (`users`.`username` = 'test' AND `users`.`id` IN('1', '2', '3')) AND (`users`.`id2` != '123' OR `users`.`id3` LIKE '%test%') AND (`users`.`id4` >= '10' OR `users`.`id5` BETWEEN '1' AND '100' OR `users`.`id6` NOT IN('1', '100')) AND (`users`.`id7` BETWEEN '1' AND '100' OR `users`.`id8` BETWEEN '1' AND '100') GROUP BY `users`.`id1`, `types`.`id2`, `users`.`id3`, `types`.`id4` ORDER BY `users`.`id1` ASC, `types`.`id2` ASC, `users`.`id3` DESC, `types`.`id4` DESC";
+        $excepted = "SELECT `users`.`id`, `users`.`username`, password AS `user_password` FROM `{$this->trueDatabase1}`.`users` AS `users` LEFT JOIN `{$this->trueDatabase1}`.`types` AS `types` ON `types`.`id` = `usr`.`type_id` INNER JOIN `test`.`statuses` AS `stt` ON `stt`.`id` = `usr`.`status_id` WHERE (`users`.`username` = 'test' AND `users`.`id` IN('1', '2', '3')) AND (`users`.`id2` != '123' OR `users`.`id3` LIKE '%test%') AND (`users`.`id4` >= '10' OR `users`.`id5` BETWEEN '1' AND '100' OR `users`.`id6` NOT IN('1', '100')) AND (`users`.`id7` BETWEEN '1' AND '100' OR `users`.`id8` BETWEEN '1' AND '100') GROUP BY `users`.`id1`, `types`.`id2`, `users`.`id3`, `types`.`id4` ORDER BY `users`.`id1` ASC, `types`.`id2` ASC, `users`.`id3` DESC, `types`.`id4` DESC";
         $this->assertEquals($excepted, $results);
     }
 
@@ -969,7 +981,7 @@ class DataSourceTest extends BaseTestCase
         );
 
         $results = $this->databaseConnection->simpleSelectBuilder($select, $from, $join, $where, $group, $order, 10, 10);
-        $excepted = "SELECT `users`.`id`, `users`.`username`, password AS `user_password` FROM `{$this->database1}`.`users` AS `users` LEFT JOIN `{$this->database1}`.`types` AS `types` ON `types`.`id` = `usr`.`type_id` INNER JOIN `test`.`statuses` AS `stt` ON `stt`.`id` = `usr`.`status_id` WHERE (`users`.`username` = 'test' AND `users`.`id` IN('1', '2', '3')) AND (`users`.`id2` != '123' OR `users`.`id3` LIKE '%test%') AND (`users`.`id4` >= '10' OR `users`.`id5` BETWEEN '1' AND '100' OR `users`.`id6` NOT IN('1', '100')) AND (`users`.`id7` BETWEEN '1' AND '100' OR `users`.`id8` BETWEEN '1' AND '100') GROUP BY `users`.`id1`, `types`.`id2`, `users`.`id3`, `types`.`id4` ORDER BY `users`.`id1` ASC, `types`.`id2` ASC, `users`.`id3` DESC, `types`.`id4` DESC LIMIT 10, 10";
+        $excepted = "SELECT `users`.`id`, `users`.`username`, password AS `user_password` FROM `{$this->trueDatabase1}`.`users` AS `users` LEFT JOIN `{$this->trueDatabase1}`.`types` AS `types` ON `types`.`id` = `usr`.`type_id` INNER JOIN `test`.`statuses` AS `stt` ON `stt`.`id` = `usr`.`status_id` WHERE (`users`.`username` = 'test' AND `users`.`id` IN('1', '2', '3')) AND (`users`.`id2` != '123' OR `users`.`id3` LIKE '%test%') AND (`users`.`id4` >= '10' OR `users`.`id5` BETWEEN '1' AND '100' OR `users`.`id6` NOT IN('1', '100')) AND (`users`.`id7` BETWEEN '1' AND '100' OR `users`.`id8` BETWEEN '1' AND '100') GROUP BY `users`.`id1`, `types`.`id2`, `users`.`id3`, `types`.`id4` ORDER BY `users`.`id1` ASC, `types`.`id2` ASC, `users`.`id3` DESC, `types`.`id4` DESC LIMIT 10, 10";
 
         $this->assertEquals($excepted, $results);
     }
@@ -986,7 +998,7 @@ class DataSourceTest extends BaseTestCase
             'title' => 'my-status'
         );
 
-        $excepted = "INSERT INTO `{$this->database1}`.`types`(`id`, `title`) VALUES('123', 'my-status')";
+        $excepted = "INSERT INTO `{$this->trueDatabase1}`.`types`(`id`, `title`) VALUES('123', 'my-status')";
         $results = $this->databaseConnection->simpleInsertBuilder($table, $data);
 
         $this->assertEquals($excepted, $results);
@@ -1005,7 +1017,7 @@ class DataSourceTest extends BaseTestCase
         );
         $where = "`id` = '2'";
 
-        $excepted = "UPDATE `{$this->database1}`.`types` SET `title` = 'my-status', `global` = '0' WHERE `id` = '2'";
+        $excepted = "UPDATE `{$this->trueDatabase1}`.`types` SET `title` = 'my-status', `global` = '0' WHERE `id` = '2'";
         $results = $this->databaseConnection->simpleUpdateBuilder($table, $data, $where);
 
         $this->assertEquals($excepted, $results);
@@ -1053,7 +1065,7 @@ class DataSourceTest extends BaseTestCase
         $where = "id = '2'";
 
         $sql = "SELECT title
-                FROM {$this->database2}.{$table}
+                FROM {$this->trueDatabase2}.{$table}
                 WHERE id = '2'";
         $loadedRecord = $this->databaseConnection->getRow($sql);
 
@@ -1062,7 +1074,7 @@ class DataSourceTest extends BaseTestCase
         $this->databaseConnection->update($table, $data, $where, $this->database2);
 
         $sql = "SELECT title
-                FROM {$this->database2}.{$table}
+                FROM {$this->trueDatabase2}.{$table}
                 WHERE id = '2'";
         $updatedRecord = $this->databaseConnection->getRow($sql);
 

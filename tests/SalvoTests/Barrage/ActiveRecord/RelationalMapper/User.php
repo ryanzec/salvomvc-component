@@ -8,7 +8,7 @@ use SalvoTests\Barrage\ActiveRecord\RelationalMapper\Status;
 class User extends \Salvo\Barrage\ActiveRecord\RelationalMapper\ActiveRecord
 {
     //These static members are required by the ActiveRecord system
-    protected static $database = 'ut_barrage';
+    protected static $database = 'barrage';
     protected static $primaryKey = array('id');
     protected static $autoIncrementedField = 'id';
 

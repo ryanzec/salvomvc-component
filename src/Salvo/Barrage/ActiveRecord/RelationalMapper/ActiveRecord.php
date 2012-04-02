@@ -96,6 +96,15 @@ abstract class ActiveRecord implements IArrayable
     private static $validDataSourceStatuses = array('new', 'loaded');
 
     /**
+     * Name of members to skip when saving a record
+     *
+     * Useful for fields that are updated automatically by the data source (like a ON UPDATE for a timestamp field in MySQL)
+     *
+     * @var array
+     */
+    protected static $skipSaveMembers = array();
+
+    /**
      * Constructor with allows for loading object by primary key when loading object
      *
      * @param null|string|array $primaryKey optional The value(s) of a primary key to load object as
@@ -129,6 +138,11 @@ abstract class ActiveRecord implements IArrayable
             }
 
             $this->loadByPrimaryKey();
+
+            if($this->isNew())
+            {
+                $this->reset();
+            }
         }
     }
 
@@ -318,7 +332,7 @@ abstract class ActiveRecord implements IArrayable
         foreach($dataSet as $row)
         {
             $object = new $className();
-            $object->loadbyArray($row, true);
+            $object->loadByArray($row, true);
             $objects[] = $object;
         }
 
@@ -401,10 +415,13 @@ abstract class ActiveRecord implements IArrayable
 
         $select = array();
 
-        foreach(static::$fields as $options)
+        foreach(static::$fields as $member => $options)
         {
-            $select[$options['name']] = (empty($options['join_table'])) ? static::$table['name'] : $options['join_table'];
+            $name = static::getQualifiedSqlField($member);
+
+            $select[$name] = (empty($options['join_table'])) ? static::$table['name'] : $options['join_table'];
         }
+
         return $select;
     }
 
@@ -456,9 +473,10 @@ abstract class ActiveRecord implements IArrayable
         {
             foreach(static::$fields as $member => $options)
             {
-                if(array_key_exists($options['name'], $data))
+                $dataKey = $this->getFieldNameFromFieldString($options['name']);
+                if(array_key_exists($dataKey, $data))
                 {
-                    $this->$member = ($urlDecode) ? urldecode($data[$options['name']]) : $data[$options['name']];
+                    $this->$member = ($urlDecode) ? urldecode($data[$dataKey]) : $data[$dataKey];
                 }
             }
 
@@ -576,7 +594,8 @@ abstract class ActiveRecord implements IArrayable
 
         foreach(static::$fields as $member => $fieldOptions)
         {
-            if(
+            if
+            (
                 (
                     (empty($fieldOptions['join_table']) || $fieldOptions['join_table'] == static::$table['name'])
                 )
@@ -584,7 +603,11 @@ abstract class ActiveRecord implements IArrayable
                 (
                     empty($fieldOptions['save_type'])
                     ||
-                    in_array($fieldOptions['save_type'], $saveTypes)))
+                    in_array($fieldOptions['save_type'], $saveTypes)
+                )
+                &&
+                !in_array($member, static::$skipSaveMembers)
+            )
             {
                 $members[$fieldOptions['name']] = $this->$member;
             }
@@ -707,8 +730,20 @@ abstract class ActiveRecord implements IArrayable
      * @static
      * @return Salvo\Barrage\DataSource\Relational\IDataSource
      */
-    private static function getDataSourceInstance()
+    protected static function getDataSourceInstance()
     {
         return DataSourceFactory::buildFromConfiguration(static::$dataSourceConfiguration);
+    }
+
+    private function getFieldNameFromFieldString($field)
+    {
+        if(stripos($field, ' AS ') !== false)
+        {
+            $explodeValue = (strpos($field, ' AS ') !== false) ? ' AS ' : ' as ';
+            $fieldParts = explode($explodeValue, $field, 2);
+            return $fieldParts[1];
+        }
+
+        return $field;
     }
 }

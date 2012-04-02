@@ -14,6 +14,8 @@ use Symfony\Component\Yaml\Yaml;
  * Configuration object
  *
  * @author Ryan Zec <code@ryanzec.com>
+ *
+ * todo: make this a non-static class
  */
 class Configuration
 {
@@ -93,7 +95,7 @@ class Configuration
      * @param $key
      * @param $data
      */
-    public function setOption($key, $data)
+    public static function setOption($key, $data)
     {
         self::$configuration[$key] = $data;
     }
@@ -110,5 +112,41 @@ class Configuration
         }
 
         return self::$configuration['model_builder']['relational']['databases'][$databaseName]['tables'][$tableName]['alias'];
+    }
+
+    public static function getRealDatabaseName($databaseName)
+    {
+        if(!empty(self::$configuration['databases']))
+        {
+            return (!empty(self::$configuration['databases'][$databaseName]))
+            ? self::$configuration['databases'][$databaseName]
+            : $databaseName;
+        }
+
+        return $databaseName;
+    }
+
+    public static function getTrueDatabaseName($databaseName)
+    {
+        if(!isset(self::$configuration['true_databases']))
+        {
+            self::parseTrueDatabaseNames();
+        }
+
+        return (!empty(self::$configuration['true_databases'][$databaseName]))
+        ? self::$configuration['true_databases'][$databaseName]
+        : $databaseName;
+    }
+
+    private static function parseTrueDatabaseNames()
+    {
+        $trueDatabases = array();
+
+        if(!empty(self::$configuration['databases']))
+        {
+            $trueDatabases = array_flip(self::$configuration['databases']);
+        }
+
+        self::$configuration['true_databases'] = $trueDatabases;
     }
 }

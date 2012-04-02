@@ -42,7 +42,9 @@ class ModelBuilder
             'tableArray',
             'joinsArray',
             'fieldsArray',
-            'dataSourceConfiguration'
+            'dataSourceConfiguration',
+            'skipSaveMembersArray',
+            'fields'
         )
     );
 
@@ -70,6 +72,7 @@ class %%class%% extends ActiveRecord
     protected static \$joins = %%joinsArray%%;
     protected static \$fields = %%fieldsArray%%;
     protected static \$dataSourceConfiguration = '%%dataSourceConfiguration%%';
+    protected static \$skipSaveMembers = %%skipSaveMembersArray%%;%%fields%%
     /**
      * @ActiveRecordEnd
      */
@@ -86,7 +89,8 @@ class %%class%% extends ActiveRecord
     protected static \$table = %%tableArray%%;
     protected static \$joins = %%joinsArray%%;
     protected static \$fields = %%fieldsArray%%;
-    protected static \$dataSourceConfiguration = '%%dataSourceConfiguration%%';";
+    protected static \$dataSourceConfiguration = '%%dataSourceConfiguration%%';
+    protected static \$skipSaveMembers = %%skipSaveMembersArray%%;%%fields%%";
 
     /**
      * Generates the php code for a model file
@@ -142,6 +146,7 @@ class %%class%% extends ActiveRecord
      */
     private static function buildSearchReplaceArray($type, $database, $table, $class, $namespace)
     {
+        $database = Configuration::getTrueDatabaseName($database);
         $builderConfiguration = Configuration::getOption('model_builder');
         $tableConfiguration = $builderConfiguration['relational']['databases'][$database]['tables'];
         $tableAlias = (!empty($tableConfiguration[$table]['alias'])) ? $tableConfiguration[$table]['alias'] : $table;
@@ -174,6 +179,7 @@ class %%class%% extends ActiveRecord
         );
 
         $fieldsArray = array();
+        $skipSaveMembersArray = (!empty($tableConfiguration[$table]['skip_save_members'])) ? $tableConfiguration[$table]['skip_save_members'] : array();
 
         $tableFieldDetails = $dataSource->getTableFieldsDetails($table, $database);
 
@@ -215,15 +221,33 @@ class %%class%% extends ActiveRecord
         {
             foreach($tableConfiguration[$table]['join_fields'] as $joinTable => $fields)
             {
-                foreach($fields as $field)
+                foreach($fields as $options)
                 {
-                    $memberName = (!empty($field['member_name'])) ? $field['member_name'] : $field['field'];
-                    $field = $field['field'];
-                    $fieldsArray[$memberName] = array
+                    $memberName = (!empty($options['member_name'])) ? $options['member_name'] : $options['field'];
+                    $field = $options['field'];
+                    $as = $options['field'];
+
+                    if(!empty($options['as']))
+                    {
+                        $as = $options['as'];
+                    }
+                    else if(!empty($options['member_name']))
+                    {
+                        $as = $options['member_name'];
+                    }
+
+                    $joinFieldData = array
                     (
                         'name' => $field,
                         'join_table' => $joinTable
                     );
+
+                    if($as != $options['field'])
+                    {
+                        $joinFieldData['name'] .= ' AS ' . $as;
+                    }
+
+                    $fieldsArray[$memberName] = $joinFieldData;
                 }
             }
         }
@@ -269,6 +293,11 @@ class %%class%% extends ActiveRecord
                             $temp['type'] = (!empty($config['type'])) ? $config['type'] : 'inner';
                             $temp['on'] = "`{$temp['alias']}`.`{$config['join_field']}` = `{$tableAlias}`.`{$config['field']}`";
 
+                            if(!empty($config['database']))
+                            {
+                                $temp['database'] = $config['database'];
+                            }
+
                             $joinsArray[$joinTable] = $temp;
                         }
                     }
@@ -282,6 +311,28 @@ class %%class%% extends ActiveRecord
 
                 case 'dataSourceConfiguration':
                     $trueValue = 'default';
+                    break;
+
+                case 'skipSaveMembersArray':
+                    $trueValue = self::arrayToPhpCodeString($skipSaveMembersArray);
+                    break;
+
+                case 'fields':
+                    $trueValue = '';
+
+                    foreach($fieldsArray as $member => $options)
+                    {
+                        if(!empty($trueValue))
+                        {
+                            $trueValue .= "\n";
+                        }
+                        else
+                        {
+                            $trueValue .= "\n\n";
+                        }
+
+                        $trueValue .= "    protected \${$member};";
+                    }
                     break;
 
                 default:
@@ -364,9 +415,11 @@ class %%class%% extends ActiveRecord
      */
     private static function updateCodeByDocBlocks($filePath, $replaceData)
     {
+
         $switch = false;
         $lines = file($filePath);
         $code = '';
+        $replaceTextAdded = false;
 
         foreach($replaceData as $docBlock => $data)
         {
@@ -380,13 +433,11 @@ class %%class%% extends ActiveRecord
 
                 if($switch == true && substr(trim($v), 0, 1) != '*' && substr(trim($v), 0, 2) != '/*')
                 {
-                    // do replacements, or anything you want with the following lines
-                    // or add, or remove, even if you might have some problems with it
-                    // for this you might not consider using foreach, instead you might
-                    // try array_walk
-
-                    $code .= "{$data[$replaceCount]}\n";
-                    $replaceCount++;
+                    if(!$replaceTextAdded)
+                    {
+                        $code .= '%%%replaceme%%%';
+                        $replaceTextAdded = true;
+                    }
                 }
                 else
                 {
@@ -399,6 +450,15 @@ class %%class%% extends ActiveRecord
                 }
             }
         }
+
+        $replaceText = null;
+
+        foreach($replaceData['ActiveRecord'] as $data)
+        {
+            $replaceText .= $data . "\n";
+        }
+
+        $code = str_replace('%%%replaceme%%%', $replaceText, $code);
 
         return $code;
     }

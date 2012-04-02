@@ -24,8 +24,24 @@ class WebTestCase extends \Silex\WebTestCase
      */
     public function createApplication()
     {
-        $application = new \Silex\Application();
-        $salvoApplication = \Salvo\Salvo::getInstance($application, __DIR__ . '/..');
-        return $salvoApplication->getSilexApplication();
+        return \Salvo\Salvo::getSilexApplication();
     }
+
+    /**
+     * Used to access ->app as ->application as application is the standard name in Salvo
+     *
+     * @param $member
+     *
+     * @return mixed
+     */
+    public function __get($member)
+    {
+        if($member === 'application')
+        {
+            return $this->app;
+        }
+
+        return null;
+    }
+
 }

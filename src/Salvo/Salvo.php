@@ -193,6 +193,8 @@ class Salvo
      * @param $application
      * @param $applicationRootDirectory
      *
+     * todo: make these parameter optional however throw exception if parameters not given and instance does not already exist
+     *
      * @return Salvo
      */
     public static function getInstance($application, $applicationRootDirectory)
@@ -210,7 +212,7 @@ class Salvo
      *
      * @return \Silex\Application
      */
-    public function getSilexApplication()
+    public static function getSilexApplication()
     {
         return self::$application;
     }

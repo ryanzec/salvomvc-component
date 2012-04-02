@@ -1,19 +1,40 @@
 #data sources
 data_source:
+  #required for database access for test - CHANGE TO MATCH YOUR DATABASE CONNECTION INFORMATION
   default:
+    driver: Mysql
+    host: 127.0.0.1
+    username: root
+    password:
+    database: mysql
+  data_source_factory_test:
+    driver: Mysql
+    host: 127.0.0.1
+    username: root
+    password:
+    database: barrage
+  active_record:
+    driver: Mysql
+    host: 127.0.0.1
+    username: root
+    password:
+    database: barrage
+
+  #used for configuration testing only - DON'T CHANGE
+  ct_default:
     driver: Mysql
     host: 127.0.0.1
     username: root
     password: password
     database: mysql
-  custom_port:
+  ct_custom_port:
     driver: Mysql
     host: 127.0.0.1
     port: 1234
     username: root
     password: password
     database: mysql
-  with_options:
+  ct_with_options:
     driver: Mysql
     host: 127.0.0.1
     port: 1235
@@ -22,18 +43,6 @@ data_source:
     database: mysql
     options:
       "PDO::MYSQL_ATTR_READ_DEFAULT_FILE": /etc/test
-  data_source_factory_test:
-    driver: Mysql
-    host: 127.0.0.1
-    username: root
-    password: password
-    database: ut_barrage
-  active_record:
-    driver: Mysql
-    host: 127.0.0.1
-    username: root
-    password: password
-    database: ut_barrage
 
 #console configurations
 model_builder:
@@ -43,7 +52,7 @@ model_builder:
       UnitTest: ./tests/BarrageTests/Model
     default_namespace: UnitTest\Model
     databases:
-      ut_barrage:
+      barrage:
         tables:
           sTaT_useS:
             alias: stt
@@ -57,3 +66,9 @@ model_builder:
           UsersTwo:
             alias: usr2
             class_name: UserTwo
+
+#dynamic database renaming
+databases:
+  TrueTest: TrueTest2
+  barrage: ut_barrage
+  barrage_test: ut_barrage_test

@@ -14,7 +14,7 @@ abstract class BaseTestCase extends PdoTestCase
     {
         $host = '127.0.0.1';
         $username = 'root';
-        $password = 'password';
+        $password = '';
         $database = '';
 
         $testDatabaseConnection = Mysql\DataSource::getInstance(new Mysql\ConnectionData($host, $username, $password, $database));

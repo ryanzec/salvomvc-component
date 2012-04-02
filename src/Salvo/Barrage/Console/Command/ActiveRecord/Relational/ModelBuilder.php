@@ -143,7 +143,8 @@ class ModelBuilder extends Console\Command\Command
                         //make sure that directory exists
                         if(!is_dir("{$basePath}/{$extraFilePath}"))
                         {
-                            mkdir("{$basePath}/{$extraFilePath}");
+                            //todo: make directory mode configurable
+                            mkdir("{$basePath}/{$extraFilePath}", 0777, true);
                         }
 
                         if(file_exists($filePath))
