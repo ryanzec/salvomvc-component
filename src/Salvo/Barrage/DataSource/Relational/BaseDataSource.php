@@ -395,8 +395,6 @@ abstract class BaseDataSource implements IDataSource
         {
             throw new RelationalSqlException("Unable to commit transaction for unknown reasons");
         }
-
-		$this->transactionStarted = false;
 	}
 
     /**
@@ -411,8 +409,6 @@ abstract class BaseDataSource implements IDataSource
         {
             throw new RelationalSqlException("Unable to rollback transactions for unknown reasons");
         }
-
-		$this->transactionStarted = false;
 	}
 
     /**
@@ -423,18 +419,17 @@ abstract class BaseDataSource implements IDataSource
      */
 	public function startTransaction()
 	{
-        //you can not run mutliple transactions at once.
-		if($this->transactionStarted == true)
+		if(!$this->pdoConnection->inTransaction())
 		{
-            throw new RelationalSqlException("Unable to start a new transaction as another one is already in progress");
+            if(!$this->pdoConnection->beginTransaction())
+            {
+                throw new RelationalSqlException("Unable to start transaction for unknown reasons");
+            }
+
+            return true;
         }
 
-        if(!$this->pdoConnection->beginTransaction())
-        {
-            throw new RelationalSqlException("Unable to start transaction for unknown reasons");
-        }
-
-	    $this->transactionStarted = true;
+        return false;
 	}
 
     /**

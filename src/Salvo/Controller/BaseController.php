@@ -275,16 +275,20 @@ class BaseController implements ControllerProviderInterface
             $data = array();
         }
 
-        $data['global_layout_template'] = self::$globalLayoutTemplate;
-        $data['layout_template'] = $this->getLayoutTemplate();
-        $data['css_files'] = $this->cssFiles;
-        $data['javascript_files'] = $this->javascriptFiles;
+        $calledMethod = $this->getCalledActionMethod();
+        $htmlPageIdentifier = RegexHelper::cameCaseToUnderscore(substr($this->getNonNamespacedCalledClass(), 0, -10) . ucfirst(substr($calledMethod, 0, -6)));
+        $htmlPageIdentifier = str_replace('_', '-', $htmlPageIdentifier);
+
+        $data['globalLayoutTemplate'] = self::$globalLayoutTemplate;
+        $data['layoutTemplate'] = $this->getLayoutTemplate();
+        $data['cssFiles'] = $this->cssFiles;
+        $data['javascriptFiles'] = $this->javascriptFiles;
         $data['session'] = self::$session;
+        $data['htmlPageIdentifier'] = $htmlPageIdentifier;
 
         if(empty($templatePathOverride))
         {
             $folder = RegexHelper::cameCaseToUnderscore(substr($this->getNonNamespacedCalledClass(), 0, -10));
-            $calledMethod = $this->getCalledActionMethod();
             $templateName =  RegexHelper::cameCaseToUnderscore(substr($calledMethod, 0, -6));
             $templatePath = $folder . '/' . $templateName;
         }

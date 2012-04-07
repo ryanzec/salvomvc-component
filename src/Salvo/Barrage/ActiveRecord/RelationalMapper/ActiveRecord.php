@@ -83,7 +83,7 @@ abstract class ActiveRecord implements IArrayable
     /**
      * @var IDataSource
      */
-    private $dataSource = null;
+    protected $dataSource = null;
 
     /**
      * @var string
@@ -144,6 +144,31 @@ abstract class ActiveRecord implements IArrayable
                 $this->reset();
             }
         }
+    }
+
+    public function diff(ActiveRecord $object)
+    {
+        //make sure the passed object is the same of the class calling it
+        if(get_called_class() !== get_class($object))
+        {
+            throw new \Exception("Can't diff two different object types");
+        }
+
+        $diff = array();
+
+        foreach(static::$fields as $member => $options)
+        {
+            if($this->$member != $object->$member)
+            {
+                $diff[$member] = array
+                (
+                    'selfValue' => $this->$member,
+                    'passedValue' => $object->$member
+                );
+            }
+        }
+
+        return $diff;
     }
 
     /**
