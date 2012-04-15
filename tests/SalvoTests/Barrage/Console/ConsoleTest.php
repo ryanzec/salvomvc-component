@@ -106,6 +106,11 @@ class Status extends ActiveRecord
     protected static \$joins = array();
     protected static \$fields = array('id'=>array('name'=>'ID'),'tItLe'=>array('name'=>'tItLe'),'glObAl'=>array('name'=>'GlObAl'));
     protected static \$dataSourceConfiguration = 'default';
+    protected static \$skipSaveMembers = array();
+
+    protected \$id;
+    protected \$tItLe;
+    protected \$glObAl;
     /**
      * @ActiveRecordEnd
      */
@@ -133,6 +138,13 @@ class Type extends ActiveRecord
     protected static \$joins = array();
     protected static \$fields = array('id'=>array('name'=>'id'),'title'=>array('name'=>'title'),'global'=>array('name'=>'global'),'enum'=>array('name'=>'enum','values'=>array('one','two','no_value')),'set'=>array('name'=>'set','values'=>array('some','value_here','hello')));
     protected static \$dataSourceConfiguration = 'default';
+    protected static \$skipSaveMembers = array();
+
+    protected \$id;
+    protected \$title;
+    protected \$global;
+    protected \$enum;
+    protected \$set;
     /**
      * @ActiveRecordEnd
      */
@@ -160,6 +172,16 @@ class User extends ActiveRecord
     protected static \$joins = array();
     protected static \$fields = array('id'=>array('name'=>'id'),'firstName'=>array('name'=>'first_name'),'lastName'=>array('name'=>'last_name'),'email'=>array('name'=>'email'),'username'=>array('name'=>'username'),'password'=>array('name'=>'password'),'typeId'=>array('name'=>'type_id'),'statusId'=>array('name'=>'status_id'));
     protected static \$dataSourceConfiguration = 'default';
+    protected static \$skipSaveMembers = array();
+
+    protected \$id;
+    protected \$firstName;
+    protected \$lastName;
+    protected \$email;
+    protected \$username;
+    protected \$password;
+    protected \$typeId;
+    protected \$statusId;
     /**
      * @ActiveRecordEnd
      */
@@ -187,6 +209,16 @@ class UserTwo extends ActiveRecord
     protected static \$joins = array();
     protected static \$fields = array('id'=>array('name'=>'id'),'firstName'=>array('name'=>'firstName'),'lastName'=>array('name'=>'lastName'),'email'=>array('name'=>'email'),'username'=>array('name'=>'username'),'password'=>array('name'=>'password'),'typeId'=>array('name'=>'typeId'),'statusId'=>array('name'=>'statusId'));
     protected static \$dataSourceConfiguration = 'default';
+    protected static \$skipSaveMembers = array();
+
+    protected \$id;
+    protected \$firstName;
+    protected \$lastName;
+    protected \$email;
+    protected \$username;
+    protected \$password;
+    protected \$typeId;
+    protected \$statusId;
     /**
      * @ActiveRecordEnd
      */

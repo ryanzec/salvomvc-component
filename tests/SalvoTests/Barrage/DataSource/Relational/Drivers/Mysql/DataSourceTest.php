@@ -1392,29 +1392,6 @@ class DataSourceTest extends BaseTestCase
     /**
      * @test
      */
-    public function transactionAlreadyStartedException()
-    {
-        $exceptionCaught = false;
-        $exceptionMessage = null;
-
-        try
-        {
-            $this->databaseConnection->startTransaction();
-            $this->databaseConnection->startTransaction();
-        }
-        catch(RelationalSqlException $exception)
-        {
-            $exceptionCaught = true;
-            $exceptionMessage = $exception->getMessage();
-        }
-
-        $this->assertEquals(true, $exceptionCaught);
-        $this->assertEquals('Unable to start a new transaction as another one is already in progress', $exceptionMessage);
-    }
-
-    /**
-     * @test
-     */
     public function clearQuotesArrayException()
     {
         $exceptionCaught = false;

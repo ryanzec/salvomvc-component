@@ -55,6 +55,8 @@ abstract class BaseDataSource implements IDataSource
      */
     protected $transactionStarted;
 
+    protected $logger;
+
     /**
      * Valid where conditions
      *
@@ -84,6 +86,8 @@ abstract class BaseDataSource implements IDataSource
      */
     private function __construct(IConnectionData $connectionData)
     {
+        $application = \Salvo\Salvo::getSilexApplication();
+        $this->logger = $application['dlog'];
         $this->connectionData = $connectionData;
         $this->defaultDatabase = $this->connectionData->getDefaultDatabase();
         $this->initializeConnection();
@@ -374,9 +378,9 @@ abstract class BaseDataSource implements IDataSource
      */
     private function setSql($sql)
     {
-        if(static::$displayQueries === true)
+        if($this->logger instanceof \Monolog\Logger)
         {
-            var_dump($sql);
+            $this->logger->debug($sql);
         }
 
         $this->sql = $sql;
@@ -471,15 +475,5 @@ abstract class BaseDataSource implements IDataSource
         $database = (!empty($database)) ? $database : $this->defaultDatabase;
         //return $database;
         return \Salvo\Barrage\Configuration::getRealDatabaseName($database);
-    }
-
-    public static function displayQueries()
-    {
-        static::$displayQueries = true;
-    }
-
-    public static function hideQueries()
-    {
-        static::$displayQueries = false;
     }
 }

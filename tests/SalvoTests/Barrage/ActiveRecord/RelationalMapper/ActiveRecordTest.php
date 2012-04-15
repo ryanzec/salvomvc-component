@@ -446,8 +446,8 @@ class ActiveRecordTest extends BaseTestCase
     public function getReferenceObjects()
     {
         $user = new User(1);
-        $type = $user->getReferenceObjects('typeId');
-        $status = $user->getReferenceObjects('statusId');
+        $type = $user->getReferenceObjects('typeId', '\SalvoTests\Barrage\ActiveRecord\RelationalMapper', 'Type');
+        $status = $user->getReferenceObjects('statusId', '\SalvoTests\Barrage\ActiveRecord\RelationalMapper', 'Status');
 
         $this->assertEquals('1', $type->id);
         $this->assertEquals('none', $type->title);

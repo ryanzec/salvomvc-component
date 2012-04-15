@@ -189,9 +189,9 @@ abstract class ActiveRecord implements IArrayable
      * @return null
      * @throws ActiveRecordException
      */
-    public function getReferenceObjects($foreignMember)
+    public function getReferenceObjects($foreignMember, $namespace, $className = null, $foreignMemberLink = null)
     {
-        if(empty($this->referenceObjects[$foreignMember]) || empty(static::$fields[$foreignMember]))
+        if((empty($className) && empty($foreignMemberLink)) && empty($this->referenceObjects[$foreignMember]) || empty(static::$fields[$foreignMember]))
         {
             if(empty($this->referenceObjects[$foreignMember]))
             {
@@ -203,14 +203,32 @@ abstract class ActiveRecord implements IArrayable
             }
         }
 
-        $className = $this->referenceObjects[$foreignMember];
+        if(empty($className))
+        {
+            $className = $this->referenceObjects[$foreignMember];
+        }
+
+        $className = $namespace . '\\' . $className;
 
         if(!class_exists($className))
         {
             throw new ActiveRecordException("{$foreignMember} is linked to class {$className} but class {$className} does not exist");
         }
 
-        return (!empty($this->$foreignMember)) ? new $className($this->$foreignMember) : null;
+        if(empty($this->$foreignMember))
+        {
+            return null;
+        }
+
+        if(empty($foreignMemberLink))
+        {
+            return new $className($this->$foreignMember);
+        }
+        else
+        {
+            $data = array($foreignMemberLink => $this->$foreignMember);
+            return $className::getOne($data);
+        }
     }
 
     /**
