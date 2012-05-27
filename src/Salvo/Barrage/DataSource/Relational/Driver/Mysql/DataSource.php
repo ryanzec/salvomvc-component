@@ -279,10 +279,11 @@ class DataSource extends BaseDataSource
      * @param string $table The table to insert into
      * @param mixed[] $data The data to insert
      * @param null|string $database optional The database the table is in (default to connection's default database)
+     * @param bool $useReplace
      *
      * @return string Generated sql
      */
-    function simpleInsertBuilder($table, $data, $database = null)
+    function simpleInsertBuilder($table, $data, $database = null, $useReplace = false)
     {
         $database = $this->getDatabaseName($database);
         $fields = null;
@@ -295,7 +296,9 @@ class DataSource extends BaseDataSource
             $values .= (empty($values)) ? "{$value}" : ", {$value}";
         }
 
-        return "INSERT INTO `{$database}`.`{$table}`({$fields}) VALUES({$values})";
+        $type = (!$useReplace) ? "INSERT INTO" : "REPLACE INTO";
+
+        return "{$type} `{$database}`.`{$table}`({$fields}) VALUES({$values})";
     }
 
     /**

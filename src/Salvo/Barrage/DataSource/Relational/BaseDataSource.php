@@ -256,12 +256,13 @@ abstract class BaseDataSource implements IDataSource
      * @param string $table The table to insert into
      * @param mixed[] $data the data to insert
      * @param null|string $database optional The database the table is in (default to connection's default database)
+     * @param bool $useReplace
      *
      * @return mixed Id of the newly inserted record
      */
-    function insert($table, $data, $database = null)
+    function insert($table, $data, $database = null, $useReplace = false)
     {
-        $sql = $this->simpleInsertBuilder($table, $data, $database);
+        $sql = $this->simpleInsertBuilder($table, $data, $database, $useReplace);
         $this->query($sql);
 
         //return the id of the inserted record

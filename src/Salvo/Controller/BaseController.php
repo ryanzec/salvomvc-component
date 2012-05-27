@@ -372,7 +372,7 @@ class BaseController implements ControllerProviderInterface
         }
         else
         {
-            $data = RegexHelper::arrayUnderscoreKeyToCameCaseKey($request->request->all());
+            $data = RegexHelper::arrayUnderscoreKeyToCameCaseKey(json_decode($request->getContent(), true));
             $user->loadByArray($data, false, true);
             $user->save();
             $status = 'success';

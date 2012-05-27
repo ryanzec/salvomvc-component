@@ -789,4 +789,9 @@ abstract class ActiveRecord implements IArrayable
 
         return $field;
     }
+
+    public static function getTableData()
+    {
+        return static::$table;
+    }
 }
