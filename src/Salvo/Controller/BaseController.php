@@ -380,7 +380,7 @@ class BaseController implements ControllerProviderInterface
 
         $data = array
         (
-            'object' => $user->toArray()
+            'object' => ($httpMethod !== 'DELETE') ? $user->toArray() : array()
         );
 
         $method = 'render' . ucfirst($dataType);
