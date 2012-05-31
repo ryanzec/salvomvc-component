@@ -44,4 +44,9 @@ class SalvoServiceProvider implements ServiceProviderInterface
 
         $application['session']->start();
     }
+
+    public function boot(Application $application)
+    {
+
+    }
 }
