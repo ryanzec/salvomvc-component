@@ -372,7 +372,26 @@ class BaseController implements ControllerProviderInterface
         }
         else
         {
-            $data = RegexHelper::arrayUnderscoreKeyToCameCaseKey(json_decode($request->getContent(), true));
+            $dataArray = array();
+            $requestData = $request->request->all();
+
+            //determine if we are going to be using the data from the request parameters or the request content
+            if(!empty($requestData))
+            {
+                $dataArray = $requestData;
+            }
+            else
+            {
+                $requestContent = $request->getContent();
+
+                if(!empty($requestContent))
+                {
+                    $dataArray = json_decode($requestContent, true);
+                }
+            }
+
+            $data = RegexHelper::arrayUnderscoreKeyToCameCaseKey($dataArray);
+            $data = RegexHelper::arrayUnderscoreKeyToCameCaseKey($data);
             $user->loadByArray($data, false, true);
             $user->save();
             $status = 'success';
