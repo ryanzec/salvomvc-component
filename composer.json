@@ -29,5 +29,6 @@
             "Salvo": "src/",
             "Barrage": "src/"
         }
-    }
+    },
+    "minimum-stability": "dev"
 }
