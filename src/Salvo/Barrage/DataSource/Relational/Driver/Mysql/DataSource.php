@@ -491,6 +491,11 @@ class DataSource extends BaseDataSource
             }
         }
 
+        if(is_array($options) && !isset($options['value']))
+        {
+            $options = array('value' => $options);
+        }
+
         if(is_array($options) && (!empty($options['value']) || $options['value'] === null))
         {
             $condition = (!empty($options['condition'])) ? $options['condition'] : '=';

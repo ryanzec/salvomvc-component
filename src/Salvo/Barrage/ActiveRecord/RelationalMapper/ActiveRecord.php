@@ -255,7 +255,7 @@ abstract class ActiveRecord implements IArrayable
     /**
      * Converts the object to an array with only the data stored in the data source (mapping information not returned)
      *
-     * @return array The data array
+     * @return array|mixed[] The data array
      */
     public function toArray()
     {
@@ -272,6 +272,8 @@ abstract class ActiveRecord implements IArrayable
     /**
      * Save the object to the database
      *
+     * @throws ActiveRecordException
+     * 
      * @return void
      */
     public function save()
@@ -367,6 +369,7 @@ abstract class ActiveRecord implements IArrayable
         }
 
         $where = self::getWhereArray($where);
+        
         $sql = $dataSource->simpleSelectBuilder($select, $from, static::$joins, $where, $group, $order, $limit, $offset);
 
         $dataSet = $dataSource->getAll($sql);
@@ -508,18 +511,18 @@ abstract class ActiveRecord implements IArrayable
      *
      * @param $data
      * @param bool $fromDataSource
-     * @param bool $urlDecode
      */
-    public function loadByArray($data, $fromDataSource = false, $urlDecode = false)
+    public function loadByArray($data, $fromDataSource = false)
     {
         if(!empty($data))
         {
             foreach(static::$fields as $member => $options)
             {
                 $dataKey = $this->getFieldNameFromFieldString($options['name']);
+
                 if(array_key_exists($dataKey, $data))
                 {
-                    $this->$member = ($urlDecode) ? urldecode($data[$dataKey]) : $data[$dataKey];
+                    $this->$member = $data[$dataKey];
                 }
             }
 

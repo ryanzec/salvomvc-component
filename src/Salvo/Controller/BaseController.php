@@ -95,7 +95,7 @@ class BaseController implements ControllerProviderInterface
         self::$globalLayoutTemplate = $application['app_config']['global_layout_template'];
 
         $autoRoutes = $this->generateActionRoutes();
-        $controllers = new ControllerCollection();
+        $controllers = $application['controllers_factory'];
 
         //get information needed to dynamically configure routes
         $fullCalledClassName = get_called_class();
@@ -304,6 +304,7 @@ class BaseController implements ControllerProviderInterface
      * Simple wrapper for rendering json to the screen
      *
      * @param array $data
+     *
      * @return string
      */
     protected function renderJson($data = array())
@@ -332,7 +333,10 @@ class BaseController implements ControllerProviderInterface
         }
         else
         {
-            $queryData = RegexHelper::arrayUnderscoreKeyToCameCaseKey($request->query->all());
+            //todo: remove passing in the $request parameter manually
+            $data = $this->restData($request);
+
+            $queryData = RegexHelper::arrayUnderscoreKeyToCameCaseKey($data['queryData']);
             $limit = (!empty($queryData['limit']) && is_numeric($queryData['limit'])) ? $queryData['limit']  : null;
             $offset = (!empty($queryData['offset']) && is_numeric($queryData['offset'])) ? $queryData['offset']  : 0;
             $order = (!empty($queryData['order']) && is_array($queryData['order'])) ? $queryData['order']  : array();
@@ -350,12 +354,39 @@ class BaseController implements ControllerProviderInterface
         return $this->$method(array('status' => 'success', 'data' => $data));
     }
 
+    protected function restData(Request $request)
+    {
+        $return = array
+        (
+            'queryData' => array()
+        );
+
+        //since this data comes from the url, we have to assume it is url encoded
+        $queryData = $request->query->all();
+        $count = count($queryData);
+
+        if($count > 0)
+        {
+            foreach($queryData as $key => $value)
+            {
+                $queryData[$key] = urldecode($value);
+            }
+
+            $return['queryData'] = $queryData;
+        }
+
+        return $return;
+    }
+
     /**
      * Provide general create, update, and delete rest functionality for all controllers that set the rest full model name
      *
      * @param \Symfony\Component\HttpFoundation\Request $request
      * @param null|mixed $objectId
      * @param string $dataType
+     *
+     * @throws \Exception
+     *
      * @return mixed
      */
     public function restProcessDataAction(Request $request, $objectId = null, $dataType = 'json')
@@ -367,32 +398,20 @@ class BaseController implements ControllerProviderInterface
 
         if($httpMethod == 'DELETE')
         {
+            if(!$user instanceof $objectName)
+            {
+                throw new \Exception('Unable to load record for deletion');
+            }
+
             $user->delete();
             $status = 'success';
         }
         else
         {
-            $dataArray = array();
-            $requestData = $request->request->all();
+            $parsedData = $this->restProcessData($request);
+            $data = RegexHelper::arrayUnderscoreKeyToCameCaseKey($parsedData['contentData']);
 
-            //determine if we are going to be using the data from the request parameters or the request content
-            if(!empty($requestData))
-            {
-                $dataArray = $requestData;
-            }
-            else
-            {
-                $requestContent = $request->getContent();
-
-                if(!empty($requestContent))
-                {
-                    $dataArray = json_decode($requestContent, true);
-                }
-            }
-
-            $data = RegexHelper::arrayUnderscoreKeyToCameCaseKey($dataArray);
-            $data = RegexHelper::arrayUnderscoreKeyToCameCaseKey($data);
-            $user->loadByArray($data, false, true);
+            $user->loadByArray($data, false);
             $user->save();
             $status = 'success';
         }
@@ -404,6 +423,32 @@ class BaseController implements ControllerProviderInterface
 
         $method = 'render' . ucfirst($dataType);
         return $this->$method(array('status' => $status, 'data' => $data, 'message' => $message));
+    }
+
+    protected function restProcessData(Request $request)
+    {
+        $return = array
+        (
+            'contentData' => array()
+        );
+
+        //default implementation request data for post/put
+        $requestContent = $request->getContent();
+
+        if(!empty($requestContent))
+        {
+            $jsonData = json_decode($requestContent, true);
+
+            //default implementation request rest calls to pass data as a json string
+            if(!is_array($jsonData))
+            {
+                throw new \Exception("");
+            }
+
+            $return['contentData'] = $jsonData;
+        }
+
+        return $return;
     }
 
     /**
@@ -418,6 +463,8 @@ class BaseController implements ControllerProviderInterface
 
     /**
      * Returns the called method from the parent controller
+     *
+     * @throws \Exception
      *
      * @return string
      */

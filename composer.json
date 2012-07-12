@@ -19,7 +19,8 @@
         "silex/silex": "master",
         "symfony/yaml": "master",
         "twig/twig": "master",
-        "symfony/console": "master"
+        "symfony/console": "master",
+        "symfony/browser-kit": "master"
     },
     "autoload":
     {
