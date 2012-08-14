@@ -445,6 +445,11 @@ class DataSource extends BaseDataSource
          * notin
          * between
          */
+        if(empty($options) && $options !== null)
+        {
+            return '';
+        }
+
         if(is_string($options))
         {
             $statementParts = explode(' ', trim($options), 2);

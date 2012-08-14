@@ -128,6 +128,16 @@ class ActiveRecordCollection implements \Countable, \SeekableIterator
     }
 
     /**
+     * Adds a record to the collection
+     *
+     * @param ActiveRecord $object
+     */
+    public function add(ActiveRecord $object)
+    {
+        $this->data[] = $object;
+    }
+
+    /**
      * Validates that all data passed (either object or array) is of type ActiveRecord
      *
      * @param array|object $data
