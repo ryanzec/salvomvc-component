@@ -24,7 +24,6 @@ class RestErrorHandler implements IBootstrap
             $restCommonString = $application['app_config']['rest_common_string'];
 
             //only register this error handler if the uri match the rest api string in it
-            //todo: make this a confirguration option (the string)
             if(strpos($requestUri, $restCommonString))
             {
                 $application->error(function (\Exception $exception, $code) use($application) {

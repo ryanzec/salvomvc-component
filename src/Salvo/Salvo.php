@@ -66,25 +66,6 @@ class Salvo
             return $application->redirect($application['routes_config']['root_redirect']);
         });
 
-        //setup global routes
-        //todo: remove
-        if(!empty($application['routes_config']['global_routes']))
-        {
-            foreach($application['routes_config']['global_routes'] as $name => $route)
-            {
-                if(empty($application['routes_config'][$route['class_name']]['namespaced_class']))
-                {
-                    throw new \Exception('No namespaced class configured for class ' . $route['class_name']);
-                }
-
-                $namespacedClass = $application['routes_config'][$route['class_name']]['namespaced_class'];
-                $method = (!empty($route['method'])) ? $route['method'] : 'get';
-                $controllerAction = $namespacedClass . '::' . $route['action'] . 'Action';
-                $application->$method($route['route'], $controllerAction)->bind($name);
-            }
-        }
-
-        //todo: add parameter support
         //setup absolute routes
         if(!empty($application['routes_config']['absolute_routes']))
         {
@@ -98,7 +79,6 @@ class Salvo
                 $namespacedClass = $route['namespaced_class'];
                 $method = (!empty($route['method'])) ? $route['method'] : 'get';
                 $controllerAction = $namespacedClass . '::' . $route['action'] . 'Action';
-                //$routeObject = $controllers->match($route['route'], $fullCalledClassName . '::' . $route['action'] . 'Action')->method(strtoupper($method))->bind($name);
                 $routeObject = $application->match($route['route'], $controllerAction)->method(strtoupper($method))->bind($route['name']);
                 RouteHelper::parametrize($routeObject, $route['parameters']);
             }
