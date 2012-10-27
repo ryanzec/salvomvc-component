@@ -1,0 +1,54 @@
+#common silex configurations
+debug: true
+
+#twig configurations
+global_layout_template: shared/layout.twig
+
+#a string to is common to all REST API calls in your application
+rest_common_string: 'api/v'
+
+#bootstrap configuration
+bootstrap:
+  -
+    class_name: Salvo\Bootstrap\RestErrorHandler
+
+#service provider we need access to
+service_providers:
+  #IMPORTANT silex internal providers and other external providers must be loaded first, otherwise salvo will not work
+  #silex internal providers
+  twig:
+    class_name: Silex\Provider\TwigServiceProvider
+    parameters:
+      path: views
+      class_path: vendor/twig/twig/lib
+    options:
+      strict_variables: false #remove this to have twig throw exceptions when using a variable that does not exist
+      debug: true
+      #cache: /mnt/hgfs/applicationpm/cache/twig
+  urlGeneretor:
+    class_name: Silex\Provider\UrlGeneratorServiceProvider
+  session:
+    class_name: Silex\Provider\SessionServiceProvider
+
+  #salvo provider
+  salvo:
+    file_path: vendor/salvo/salvo/src/Salvo/Provider/SalvoServiceProvider.php
+    class_name: Salvo\Provider\SalvoServiceProvider
+    class_path: vendor/salvo/salvo/src
+    barrage_configuration_file_path: configuration/barrage.yml
+    barrage_console_configuration_file_path: configuration/barrage_console.yml
+
+  #project provider
+  application:
+    file_path: src/Application/ServiceProvider.php
+    class_name: Application\ServiceProvider
+    class_path: src
+
+#log files that we want to write to
+loggers:
+  glog:
+    file_path: logs/general.log
+    level: notice
+  dlog:
+    file_path: logs/database.log
+    level: warning

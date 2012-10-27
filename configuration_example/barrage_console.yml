@@ -1,0 +1,19 @@
+# model_builder:
+#   base_source_path: /var/www/application/src
+#   relational:
+#     default_namespace: Application\Model
+#     databases:
+#       Security:
+#         tables:
+#           Users:
+#             alias: usr
+#             class_name: User
+#             joins:
+#               UserAuthenticationKeys:
+#                 type: left
+#                 field: id
+#                 join_field: userId
+#             join_fields:
+#               UserAuthenticationKeys:
+#                 -
+#                   field: authenticationKey

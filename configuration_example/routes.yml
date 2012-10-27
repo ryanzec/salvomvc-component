@@ -1,0 +1,20 @@
+#global default page
+root_redirect: /home/index
+
+absolute_routes:
+  -
+    name: rest_authentication
+    route: /api/v1/authentication/{username}/{password}
+    namespaced_class: Application\Controller\AuthenticationController
+    action: session
+    method: get|post|delete
+    parameters:
+      username:
+        default:
+      password:
+        default:
+
+#Controller Routes
+AuthenticationController:
+  base_route: authentication
+  namespaced_class: Application\Controller\AuthenticationController
