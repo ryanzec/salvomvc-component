@@ -9,6 +9,7 @@
 namespace Salvo;
 
 use Salvo\Utility\ClassHelper;
+use Salvo\Utility\RouteHelper;
 use Silex\Application;
 use Symfony\Component\Yaml\Yaml;
 use Monolog\Logger;
@@ -66,6 +67,7 @@ class Salvo
         });
 
         //setup global routes
+        //todo: remove
         if(!empty($application['routes_config']['global_routes']))
         {
             foreach($application['routes_config']['global_routes'] as $name => $route)
@@ -79,6 +81,26 @@ class Salvo
                 $method = (!empty($route['method'])) ? $route['method'] : 'get';
                 $controllerAction = $namespacedClass . '::' . $route['action'] . 'Action';
                 $application->$method($route['route'], $controllerAction)->bind($name);
+            }
+        }
+
+        //todo: add parameter support
+        //setup absolute routes
+        if(!empty($application['routes_config']['absolute_routes']))
+        {
+            foreach($application['routes_config']['absolute_routes'] as $route)
+            {
+                if(empty($route['namespaced_class']))
+                {
+                    throw new \Exception('No namespaced class configured for route ' . $route['route']);
+                }
+
+                $namespacedClass = $route['namespaced_class'];
+                $method = (!empty($route['method'])) ? $route['method'] : 'get';
+                $controllerAction = $namespacedClass . '::' . $route['action'] . 'Action';
+                //$routeObject = $controllers->match($route['route'], $fullCalledClassName . '::' . $route['action'] . 'Action')->method(strtoupper($method))->bind($name);
+                $routeObject = $application->match($route['route'], $controllerAction)->method(strtoupper($method))->bind($route['name']);
+                RouteHelper::parametrize($routeObject, $route['parameters']);
             }
         }
 
@@ -157,7 +179,8 @@ class Salvo
 
             //var_dump($event);
 
-            if(strpos($controller, '::') !== false)
+
+            if(is_string($controller) && strpos($controller, '::') !== false)
             {
                 //set the requested controller and action
                 $controllerParts = explode('::', $controller);
@@ -165,13 +188,13 @@ class Salvo
                 $application['requested_controller'] = substr(ClassHelper::getNonNamespacedClass($controllerParts[0]), 0, -10);
                 $application['requested_action'] = substr($controllerParts[1], 0, -6);
             }
-        }, 1000);
+        }, 1100);
 
         //make sure the session is saved
         $application->after(function($event) use ($application)
         {
             $application['session']->save();
-        }, -1000);
+        }, -1100);
 
         self::$application = $application;
 

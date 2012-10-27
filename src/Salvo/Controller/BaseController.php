@@ -14,6 +14,7 @@ use Silex\ControllerCollection;
 use Symfony\Component\Yaml\Yaml;
 use Salvo\Utility\RegexHelper;
 use Salvo\Utility\ClassHelper;
+use Salvo\Utility\RouteHelper;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -101,12 +102,6 @@ class BaseController implements ControllerProviderInterface
         $fullCalledClassName = get_called_class();
         $baseCalledClassName = $this->getNonNamespacedCalledClass();
 
-        //makes sure this controller has routes configured
-        if(empty($application['routes_config'][$baseCalledClassName]['routes']) && empty($application['routes_config'][$baseCalledClassName]['default_route']))
-        {
-            throw new \Exception("Not routes have been define for {$baseCalledClassName}");
-        }
-
         $controllerRoutes = $application['routes_config'][$baseCalledClassName];
 
         //setup default page
@@ -128,23 +123,7 @@ class BaseController implements ControllerProviderInterface
                 $name = (!empty($route['name'])) ? $route['name'] : $controllerRoutes['base_route'] . '_' . RegexHelper::cameCaseToUnderscore($route['action']);
                 $method = (!empty($route['method'])) ? $route['method'] : 'get';
                 $routeObject = $controllers->match($route['route'], $fullCalledClassName . '::' . $route['action'] . 'Action')->method(strtoupper($method))->bind($name);
-
-                //parameter options
-                if(!empty($route['parameters']))
-                {
-                    foreach($route['parameters'] as $parameter => $options)
-                    {
-                        if(is_array($options) && array_key_exists('default', $options))
-                        {
-                            $routeObject->value($parameter, $options['default']);
-                        }
-
-                        if(is_array($options) && array_key_exists('regex', $options))
-                        {
-                            $routeObject->assert($parameter, $options['regex']);
-                        }
-                    }
-                }
+                RouteHelper::parametrize($routeObject, $route['parameters']);
             }
         }
 
