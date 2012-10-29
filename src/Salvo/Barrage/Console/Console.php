@@ -18,14 +18,14 @@ use Salvo\Barrage\Console\Command\ActiveRecord\Relational;
  */
 class Console extends Application
 {
-    /**
-     * Calculator constructor.
-     */
-    public function __construct() {
-        parent::__construct('Barrage Console', '1.0');
+	/**
+	 * Calculator constructor.
+	 */
+	public function __construct() {
+		parent::__construct('Barrage Console', '1.0');
 
-        $this->addCommands(array(
-            new Command\ActiveRecord\Relational\ModelBuilder()
-        ));
-    }
+		$this->addCommands(array(
+			new Command\ActiveRecord\Relational\ModelBuilder()
+		));
+	}
 }

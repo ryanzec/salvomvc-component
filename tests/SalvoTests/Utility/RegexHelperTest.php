@@ -9,21 +9,21 @@ use SalvoTests\BaseTestCase;
  */
 class RegexHelperTest extends BaseTestCase
 {
-    /**
-     * @test
-     */
-    public function cameCaseToUnderscore()
-    {
-        $this->assertEquals('camel_case', RegexHelper::cameCaseToUnderscore('camelCase'));
-    }
+	/**
+	 * @test
+	 */
+	public function cameCaseToUnderscore()
+	{
+		$this->assertEquals('camel_case', RegexHelper::cameCaseToUnderscore('camelCase'));
+	}
 
-    /**
-     * @test
-     */
-    public function toUnderscore()
-    {
-        $this->assertEquals('camel_case', RegexHelper::toUnderscore('camelCase'));
-        $this->assertEquals('something_weird', RegexHelper::toUnderscore('SOMEthingWeird'));
-        $this->assertEquals('this_is_not_good', RegexHelper::toUnderscore('thisIsNot_GOOD'));
-    }
+	/**
+	 * @test
+	 */
+	public function toUnderscore()
+	{
+		$this->assertEquals('camel_case', RegexHelper::toUnderscore('camelCase'));
+		$this->assertEquals('something_weird', RegexHelper::toUnderscore('SOMEthingWeird'));
+		$this->assertEquals('this_is_not_good', RegexHelper::toUnderscore('thisIsNot_GOOD'));
+	}
 }

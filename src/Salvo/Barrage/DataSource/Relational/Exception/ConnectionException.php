@@ -17,20 +17,20 @@ use Salvo\Barrage\DataSource\Relational\IConnectionData;
  */
 class ConnectionException extends \Exception
 {
-    /**
-     * @var null
-     */
-    private $connectionData;
+	/**
+	 * @var null
+	 */
+	private $connectionData;
 
-    /**
-     * Constructor
-     *
-     * @param $message
-     * @param \Salvo\Barrage\DataSource\Relational\IConnectionData|null $connectionData\
-     */
-    public function __construct($message,IConnectionData $connectionData = null)
-    {
-        parent::__construct($message);
-        $this->connectionData = $connectionData;
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param $message
+	 * @param \Salvo\Barrage\DataSource\Relational\IConnectionData|null $connectionData\
+	 */
+	public function __construct($message,IConnectionData $connectionData = null)
+	{
+		parent::__construct($message);
+		$this->connectionData = $connectionData;
+	}
 }

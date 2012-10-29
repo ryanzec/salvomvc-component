@@ -14,22 +14,22 @@ namespace Salvo\Barrage\DataSource\Relational\Exception;
  */
 class RelationalSqlException extends \Exception
 {
-    /**
-     * Last sql call attempted before exception
-     *
-     * @var string
-     */
-    private $sql;
+	/**
+	 * Last sql call attempted before exception
+	 *
+	 * @var string
+	 */
+	private $sql;
 
-    /**
-     * Constructor
-     *
-     * @param $message
-     * @param string $sql
-     */
-    public function __construct($message, $sql = null)
-    {
-        parent::__construct($message);
-        $this->sql = $sql;
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param $message
+	 * @param string $sql
+	 */
+	public function __construct($message, $sql = null)
+	{
+		parent::__construct($message);
+		$this->sql = $sql;
+	}
 }

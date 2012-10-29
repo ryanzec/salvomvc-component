@@ -18,22 +18,22 @@ use Salvo\Barrage\DataSource\IConnectionDataFactory;
  */
 class ConnectionDataFactory implements IConnectionDataFactory
 {
-    /**
-     * @static
-     * @param $configurationName
-     * @return IConnectionData
-     */
-    public static function buildFromConfiguration($configurationName)
-    {
-        $dataSourceConfiguration = Configuration::getDataSourceConfiguration($configurationName);
-        $connectionDataClassName = 'Salvo\\Barrage\\DataSource\\Relational\\Driver\\' . $dataSourceConfiguration['driver'] . '\\' . 'ConnectionData';
-        $host = $dataSourceConfiguration['host'];
-        $username = $dataSourceConfiguration['username'];
-        $password = $dataSourceConfiguration['password'];
-        $database = $dataSourceConfiguration['database'];
-        $port = (!empty($dataSourceConfiguration['port'])) ? $dataSourceConfiguration['port'] : null;
-        $options = (!empty($dataSourceConfiguration['options'])) ? $dataSourceConfiguration['options'] : array();
+	/**
+	 * @static
+	 * @param $configurationName
+	 * @return IConnectionData
+	 */
+	public static function buildFromConfiguration($configurationName)
+	{
+		$dataSourceConfiguration = Configuration::getDataSourceConfiguration($configurationName);
+		$connectionDataClassName = 'Salvo\\Barrage\\DataSource\\Relational\\Driver\\' . $dataSourceConfiguration['driver'] . '\\' . 'ConnectionData';
+		$host = $dataSourceConfiguration['host'];
+		$username = $dataSourceConfiguration['username'];
+		$password = $dataSourceConfiguration['password'];
+		$database = $dataSourceConfiguration['database'];
+		$port = (!empty($dataSourceConfiguration['port'])) ? $dataSourceConfiguration['port'] : null;
+		$options = (!empty($dataSourceConfiguration['options'])) ? $dataSourceConfiguration['options'] : array();
 
-        return new $connectionDataClassName($host, $username, $password, $database, $port, $options);
-    }
+		return new $connectionDataClassName($host, $username, $password, $database, $port, $options);
+	}
 }

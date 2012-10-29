@@ -10,7 +10,7 @@ use \Salvo\Barrage\DataSource\Relational\IDataSource;
 
 abstract class BaseTestCase extends PdoTestCase
 {
-    public function __construct()
-    {
-    }
+	public function __construct()
+	{
+	}
 }

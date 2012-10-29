@@ -15,11 +15,11 @@ namespace Salvo\Barrage\DataSource;
  */
 interface IDataSourceFactory
 {
-    /**
-     * Returns a DataSource object built from a configuration
-     *
-     * @abstract
-     * @param $configurationName
-     */
-    public static function buildFromConfiguration($configurationName);
+	/**
+	 * Returns a DataSource object built from a configuration
+	 *
+	 * @abstract
+	 * @param $configurationName
+	 */
+	public static function buildFromConfiguration($configurationName);
 }

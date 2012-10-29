@@ -15,12 +15,12 @@ namespace Salvo;
  */
 interface IArrayable
 {
-    /**
-     * Converts an object into an array
-     *
-     * @abstract
-     *
-     * @return mixed[] The object in array form
-     */
-    function toArray();
+	/**
+	 * Converts an object into an array
+	 *
+	 * @abstract
+	 *
+	 * @return mixed[] The object in array form
+	 */
+	function toArray();
 }

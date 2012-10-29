@@ -15,14 +15,14 @@ namespace Salvo;
  */
 interface IBootstrap
 {
-    /**
-     * This is method that the Salvo\Application executes when a bootstrap class is applied to it
-     *
-     * @abstract
-     *
-     * @param \Silex\Application $application
-     *
-     * @return void
-     */
-    public function configure(\Silex\Application $application);
+	/**
+	 * This is method that the Salvo\Application executes when a bootstrap class is applied to it
+	 *
+	 * @abstract
+	 *
+	 * @param \Silex\Application $application
+	 *
+	 * @return void
+	 */
+	public function configure(\Silex\Application $application);
 }

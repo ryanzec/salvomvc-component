@@ -20,120 +20,120 @@ use Salvo\Barrage\DataSource\Relational\Exception\ConnectionException;
  */
 abstract class BaseDataSource implements IDataSource
 {
-    /**
-     * @var IConnectionData
-     */
-    protected $connectionData;
+	/**
+	 * @var IConnectionData
+	 */
+	protected $connectionData;
 
-    /**
-     * @var \PDO
-     */
-    protected $pdoConnection;
+	/**
+	 * @var \PDO
+	 */
+	protected $pdoConnection;
 
-    /**
-     * @var \PDOStatement
-     */
-    protected $lastPdoStatement;
+	/**
+	 * @var \PDOStatement
+	 */
+	protected $lastPdoStatement;
 
-    /**
-     * @var int
-     */
-    protected $lastRowsEffected;
+	/**
+	 * @var int
+	 */
+	protected $lastRowsEffected;
 
-    /**
-     * @var string
-     */
-    protected $sql;
+	/**
+	 * @var string
+	 */
+	protected $sql;
 
-    /**
-     * @var string
-     */
-    protected $defaultDatabase;
+	/**
+	 * @var string
+	 */
+	protected $defaultDatabase;
 
-    /**
-     * @var bool
-     */
-    protected $transactionStarted;
+	/**
+	 * @var bool
+	 */
+	protected $transactionStarted;
 
-    protected $logger;
+	protected $logger;
 
-    /**
-     * Valid where conditions
-     *
-     * @var array
-     */
-    protected static $validWhereConditions = array('=', '!=', '>', '>=', '<', '<=', 'like', 'not like', 'between');
+	/**
+	 * Valid where conditions
+	 *
+	 * @var array
+	 */
+	protected static $validWhereConditions = array('=', '!=', '>', '>=', '<', '<=', 'like', 'not like', 'between');
 
-    /**
-     * Valid where logic
-     *
-     * @var array
-     */
-    protected static $validWhereLogic = array('and', 'or');
+	/**
+	 * Valid where logic
+	 *
+	 * @var array
+	 */
+	protected static $validWhereLogic = array('and', 'or');
 
-    /**
-     * @var array
-     */
-    private static $instances;
+	/**
+	 * @var array
+	 */
+	private static $instances;
 
-    protected static $displayQueries = false;
+	protected static $displayQueries = false;
 
-    /**
-     * Setup the PDO connection with the passed configuration
-     *
-     * @param IConnectionData $connectionData
-     * @return BaseDataSource
-     */
-    private function __construct(IConnectionData $connectionData)
-    {
-        $application = \Salvo\Salvo::getSilexApplication();
-        $this->logger = $application['dlog'];
-        $this->connectionData = $connectionData;
-        $this->defaultDatabase = $this->connectionData->getDefaultDatabase();
-        $this->initializeConnection();
-    }
+	/**
+	 * Setup the PDO connection with the passed configuration
+	 *
+	 * @param IConnectionData $connectionData
+	 * @return BaseDataSource
+	 */
+	private function __construct(IConnectionData $connectionData)
+	{
+		$application = \Salvo\Salvo::getSilexApplication();
+		$this->logger = $application['dlog'];
+		$this->connectionData = $connectionData;
+		$this->defaultDatabase = $this->connectionData->getDefaultDatabase();
+		$this->initializeConnection();
+	}
 
-    /**
-     * Release any resources available
-     */
-    public function __destruct()
-    {
-        $this->lastPdoStatement = null;
-        $this->pdoConnection = null;
-    }
+	/**
+	 * Release any resources available
+	 */
+	public function __destruct()
+	{
+		$this->lastPdoStatement = null;
+		$this->pdoConnection = null;
+	}
 
-    public static function getInstance(IConnectionData $connectionData)
-    {
-        $key = $connectionData->__toString();
-        if(!isset(self::$instances[$key]) || !self::$instances[$key] instanceof BaseDataSource)
-        {
-            self::$instances[$key] = new static($connectionData);
-        }
+	public static function getInstance(IConnectionData $connectionData)
+	{
+		$key = $connectionData->__toString();
+		if(!isset(self::$instances[$key]) || !self::$instances[$key] instanceof BaseDataSource)
+		{
+			self::$instances[$key] = new static($connectionData);
+		}
 
-        return self::$instances[$key];
-    }
+		return self::$instances[$key];
+	}
 
-    /**
-     * Returns that connection data object for the data source
-     *
-     * @return IConnectionData
-     */
-    public function getConnectionData()
-    {
-        return $this->connectionData;
-    }
+	/**
+	 * Returns that connection data object for the data source
+	 *
+	 * @return IConnectionData
+	 */
+	public function getConnectionData()
+	{
+		return $this->connectionData;
+	}
 
-    /**
-     * Retrieve all the results of a sql call
-     *
-     * @abstract
-     * @param string $sql The sql to execute
-     * @param mixed $returnType optional The type of data returned (default to PDO::FETCH_ASSOC)
-     *
-     * @return mixed[][] The results
-     */
-    public function getAll($sql, $returnType = \PDO::FETCH_ASSOC)
-    {
+	/**
+	 * Retrieve all the results of a sql call
+	 *
+	 * @abstract
+	 * @param string $sql The sql to execute
+	 * @param mixed $returnType optional The type of data returned (default to PDO::FETCH_ASSOC)
+	 *
+	 * @return mixed[][] The results
+	 */
+	public function getAll($sql, $returnType = \PDO::FETCH_ASSOC)
+	{
 		if($this->query($sql))
 		{
 			if($this->lastPdoStatement !== false)
@@ -143,19 +143,19 @@ abstract class BaseDataSource implements IDataSource
 		}
 
 		return false;
-    }
+	}
 
-    /**
-     * Return the first row returned by a sql call
-     *
-     * @abstract
-     * @param string $sql The sql to execute
-     * @param int $returnType optional The type of data returned (default to PDO::FETCH_ASSOC)
-     *
-     * @return mixed[] The results
-     */
-    public function getRow($sql, $returnType = \PDO::FETCH_ASSOC)
-    {
+	/**
+	 * Return the first row returned by a sql call
+	 *
+	 * @abstract
+	 * @param string $sql The sql to execute
+	 * @param int $returnType optional The type of data returned (default to PDO::FETCH_ASSOC)
+	 *
+	 * @return mixed[] The results
+	 */
+	public function getRow($sql, $returnType = \PDO::FETCH_ASSOC)
+	{
 		if($this->query($sql))
 		{
 			if($this->lastPdoStatement !== false)
@@ -170,25 +170,25 @@ abstract class BaseDataSource implements IDataSource
 		}
 
 		return false;
-    }
+	}
 
-    /**
-     * Returns all the values for the first column for all the returned rows as a single dimension array from a sql call
-     *
-     * @abstract
-     * @param string $sql The sql to execute
-     *
-     * @return mixed[] The results
-     */
-    public function getColumn($sql)
-    {
-        if($this->query($sql))
+	/**
+	 * Returns all the values for the first column for all the returned rows as a single dimension array from a sql call
+	 *
+	 * @abstract
+	 * @param string $sql The sql to execute
+	 *
+	 * @return mixed[] The results
+	 */
+	public function getColumn($sql)
+	{
+		if($this->query($sql))
 		{
-	        if($this->lastPdoStatement !== false)
+			if($this->lastPdoStatement !== false)
 			{
 				$return = array();
 
-                foreach($this->lastPdoStatement as $row)
+				foreach($this->lastPdoStatement as $row)
 				{
 					$return[] = $row[0];
 				}
@@ -198,18 +198,18 @@ abstract class BaseDataSource implements IDataSource
 		}
 
 		return false;
-    }
+	}
 
-    /**
-     * Return the first column from the first returned row from a sql call
-     *
-     * @abstract
-     * @param string $sql The sql to execute
-     *
-     * @return mixed The results
-     */
-    public function getOne($sql)
-    {
+	/**
+	 * Return the first column from the first returned row from a sql call
+	 *
+	 * @abstract
+	 * @param string $sql The sql to execute
+	 *
+	 * @return mixed The results
+	 */
+	public function getOne($sql)
+	{
 		if($this->query($sql))
 		{
 			if($this->lastPdoStatement !== false)
@@ -222,95 +222,95 @@ abstract class BaseDataSource implements IDataSource
 		}
 
 		return false;
-    }
+	}
 
-    /**
-     * Executes a sql call
-     *
-     * @abstract
-     * @param string $sql The sql to execute
-     *
-     * @return \PDOStatement
-     */
-    function query($sql)
-    {
-        $this->setSql($sql);
-        $this->lastPdoStatement = $this->pdoConnection->query($this->sql);
+	/**
+	 * Executes a sql call
+	 *
+	 * @abstract
+	 * @param string $sql The sql to execute
+	 *
+	 * @return \PDOStatement
+	 */
+	function query($sql)
+	{
+		$this->setSql($sql);
+		$this->lastPdoStatement = $this->pdoConnection->query($this->sql);
 
-        if($this->lastPdoStatement !== false)
-        {
-            $this->lastRowsEffected = $this->lastPdoStatement->rowCount();
-        }
-        else
-        {
-            $this->databaseError();
-        }
+		if($this->lastPdoStatement !== false)
+		{
+			$this->lastRowsEffected = $this->lastPdoStatement->rowCount();
+		}
+		else
+		{
+			$this->databaseError();
+		}
 
-        return $this->lastPdoStatement;
-    }
+		return $this->lastPdoStatement;
+	}
 
-    /**
-     * Inserts data into the database
-     *
-     * @abstract
-     * @param string $table The table to insert into
-     * @param mixed[] $data the data to insert
-     * @param null|string $database optional The database the table is in (default to connection's default database)
-     * @param bool $useReplace
-     *
-     * @return mixed Id of the newly inserted record
-     */
-    function insert($table, $data, $database = null, $useReplace = false)
-    {
-        $sql = $this->simpleInsertBuilder($table, $data, $database, $useReplace);
-        $this->query($sql);
+	/**
+	 * Inserts data into the database
+	 *
+	 * @abstract
+	 * @param string $table The table to insert into
+	 * @param mixed[] $data the data to insert
+	 * @param null|string $database optional The database the table is in (default to connection's default database)
+	 * @param bool $useReplace
+	 *
+	 * @return mixed Id of the newly inserted record
+	 */
+	function insert($table, $data, $database = null, $useReplace = false)
+	{
+		$sql = $this->simpleInsertBuilder($table, $data, $database, $useReplace);
+		$this->query($sql);
 
-        //return the id of the inserted record
-        return $this->getLastInsertId();
-    }
+		//return the id of the inserted record
+		return $this->getLastInsertId();
+	}
 
-    /**
-     * Returns the last insert id for the connection
-     *
-     * @return string
-     */
-    public function getLastInsertId()
-    {
-        return $this->pdoConnection->lastInsertId();
-    }
+	/**
+	 * Returns the last insert id for the connection
+	 *
+	 * @return string
+	 */
+	public function getLastInsertId()
+	{
+		return $this->pdoConnection->lastInsertId();
+	}
 
-    /**
-     * Updates data in the database
-     *
-     * @abstract
-     * @param string $table The table to update
-     * @param mixed[] $data The data tp update
-     * @param string $where The where part of the statement that comes after WHERE in the sql call
-     * @param null|string $database optional The database the table is in (default to connection's default database)
-     *
-     * @return void
-     */
-    function update($table, $data, $where, $database = null)
-    {
-        $sql = $this->simpleUpdateBuilder($table, $data, $where, $database);
-        return $this->query($sql);
-    }
+	/**
+	 * Updates data in the database
+	 *
+	 * @abstract
+	 * @param string $table The table to update
+	 * @param mixed[] $data The data tp update
+	 * @param string $where The where part of the statement that comes after WHERE in the sql call
+	 * @param null|string $database optional The database the table is in (default to connection's default database)
+	 *
+	 * @return void
+	 */
+	function update($table, $data, $where, $database = null)
+	{
+		$sql = $this->simpleUpdateBuilder($table, $data, $where, $database);
+		return $this->query($sql);
+	}
 
-    /**
-     * Cleans the input to protected against sql injections
-     *
-     * @abstract
-     * @param mixed $value The value to clean
-     * @param bool $wrapQuotes optional Whether you want to have the return value already in quotes or not
-     *
-     * @return string Cleaned value
-     */
-    function cleanQuote($value, $wrapQuotes = true)
-    {
-        if(is_array($value))
-        {
-            throw new RelationalSqlException("Can't clean array variable");
-        }
+	/**
+	 * Cleans the input to protected against sql injections
+	 *
+	 * @abstract
+	 * @param mixed $value The value to clean
+	 * @param bool $wrapQuotes optional Whether you want to have the return value already in quotes or not
+	 *
+	 * @return string Cleaned value
+	 */
+	function cleanQuote($value, $wrapQuotes = true)
+	{
+		if(is_array($value))
+		{
+			throw new RelationalSqlException("Can't clean array variable");
+		}
 
 		$value = $this->pdoConnection->quote($value);
 
@@ -320,161 +320,161 @@ abstract class BaseDataSource implements IDataSource
 		}
 
 		return $value;
-    }
+	}
 
-    /**
-     * Create the PDO connection to the database
-     *
-     * @throws ConnectionException
-     *
-     * @return void
-     */
-    private function initializeConnection()
-    {
-        try
-        {
-            $this->pdoConnection = new \PDO($this->connectionData->getConnectionString(),
-                                            $this->connectionData->getUsername(),
-                                            $this->connectionData->getPassword(),
-                                            $this->connectionData->getOptions());
-        }
-        catch(\Exception $exception)
-        {
-            throw new ConnectionException("Unable to make PDO Database connection ({$exception->getMessage()})", $this->connectionData);
-        }
-    }
+	/**
+	 * Create the PDO connection to the database
+	 *
+	 * @throws ConnectionException
+	 *
+	 * @return void
+	 */
+	private function initializeConnection()
+	{
+		try
+		{
+			$this->pdoConnection = new \PDO($this->connectionData->getConnectionString(),
+											$this->connectionData->getUsername(),
+											$this->connectionData->getPassword(),
+											$this->connectionData->getOptions());
+		}
+		catch(\Exception $exception)
+		{
+			throw new ConnectionException("Unable to make PDO Database connection ({$exception->getMessage()})", $this->connectionData);
+		}
+	}
 
-    /**
-     * Throws an exception with detailed PDO exception information if available
-     *
-     * @throws RelationalSqlException
-     *
-     * @return void
-     */
-    private function databaseError()
-    {
-        $error_information = $this->pdoConnection->errorInfo();
+	/**
+	 * Throws an exception with detailed PDO exception information if available
+	 *
+	 * @throws RelationalSqlException
+	 *
+	 * @return void
+	 */
+	private function databaseError()
+	{
+		$error_information = $this->pdoConnection->errorInfo();
 
-        if(!empty($error_information[0]))
-        {
-            $exception_message = 'PDO SQL State Error Code: ' . $error_information[0] . "\n"
-            . ucfirst($this->getServerVendorName()) . ' error code: ' . $error_information[1] . "\n"
-            . 'Error Details: ' . $error_information[2] . "\n"
-            . 'SQL: ' . $this->sql;
+		if(!empty($error_information[0]))
+		{
+			$exception_message = 'PDO SQL State Error Code: ' . $error_information[0] . "\n"
+			. ucfirst($this->getServerVendorName()) . ' error code: ' . $error_information[1] . "\n"
+			. 'Error Details: ' . $error_information[2] . "\n"
+			. 'SQL: ' . $this->sql;
 
-            throw new RelationalSqlException($exception_message, $this->sql);
-        }
+			throw new RelationalSqlException($exception_message, $this->sql);
+		}
 
 		throw new RelationalSqlException("Unknown database exception happened", $this->sql);
-    }
+	}
 
-    /**
-     * Sets the sql the is used fro execution and retrieval
-     *
-     * @param $sql string The sql to store
-     *
-     * todo: add functionality to be able to show queries as they run
-     *
-     * @return void
-     */
-    private function setSql($sql)
-    {
-        if($this->logger instanceof \Monolog\Logger)
-        {
-            $this->logger->debug($sql);
-        }
+	/**
+	 * Sets the sql the is used fro execution and retrieval
+	 *
+	 * @param $sql string The sql to store
+	 *
+	 * todo: add functionality to be able to show queries as they run
+	 *
+	 * @return void
+	 */
+	private function setSql($sql)
+	{
+		if($this->logger instanceof \Monolog\Logger)
+		{
+			$this->logger->debug($sql);
+		}
 
-        $this->sql = $sql;
-        return true;
-    }
+		$this->sql = $sql;
+		return true;
+	}
 
-    /**
-     * Commits a transaction
-     *
-     * @abstract
-     * @return void
-     */
+	/**
+	 * Commits a transaction
+	 *
+	 * @abstract
+	 * @return void
+	 */
 	public function commitTransaction()
 	{
-        if(!$this->pdoConnection->commit())
-        {
-            throw new RelationalSqlException("Unable to commit transaction for unknown reasons");
-        }
+		if(!$this->pdoConnection->commit())
+		{
+			throw new RelationalSqlException("Unable to commit transaction for unknown reasons");
+		}
 	}
 
-    /**
-     * Rolls back a transaction
-     *
-     * @abstract
-     * @return void
-     */
+	/**
+	 * Rolls back a transaction
+	 *
+	 * @abstract
+	 * @return void
+	 */
 	public function rollBackTransaction()
 	{
-        if(!$this->pdoConnection->rollBack())
-        {
-            throw new RelationalSqlException("Unable to rollback transactions for unknown reasons");
-        }
+		if(!$this->pdoConnection->rollBack())
+		{
+			throw new RelationalSqlException("Unable to rollback transactions for unknown reasons");
+		}
 	}
 
-    /**
-     * Starts a transaction
-     *
-     * @abstract
-     * @return void
-     */
+	/**
+	 * Starts a transaction
+	 *
+	 * @abstract
+	 * @return void
+	 */
 	public function startTransaction()
 	{
 		if(!$this->pdoConnection->inTransaction())
 		{
-            if(!$this->pdoConnection->beginTransaction())
-            {
-                throw new RelationalSqlException("Unable to start transaction for unknown reasons");
-            }
+			if(!$this->pdoConnection->beginTransaction())
+			{
+				throw new RelationalSqlException("Unable to start transaction for unknown reasons");
+			}
 
-            return true;
-        }
+			return true;
+		}
 
-        return false;
+		return false;
 	}
 
-    /**
-     * Returns the raw PDO connection
-     *
-     * @return \PDO
-     */
-    public function getPdoConnection()
-    {
-        return $this->pdoConnection;
-    }
+	/**
+	 * Returns the raw PDO connection
+	 *
+	 * @return \PDO
+	 */
+	public function getPdoConnection()
+	{
+		return $this->pdoConnection;
+	}
 
-    /**
-     * Validates if the condition is a valid one
-     *
-     * @param $condition
-     *
-     * @return bool
-     */
-    protected function validateWhereCondition($condition)
-    {
-        return in_array($condition, self::$validWhereConditions);
-    }
+	/**
+	 * Validates if the condition is a valid one
+	 *
+	 * @param $condition
+	 *
+	 * @return bool
+	 */
+	protected function validateWhereCondition($condition)
+	{
+		return in_array($condition, self::$validWhereConditions);
+	}
 
-    /**
-     * Validates if the logic is a valid one
-     *
-     * @param $logic
-     *
-     * @return bool
-     */
-    protected function validateWhereLogic($logic)
-    {
-        return in_array($logic, self::$validWhereLogic);
-    }
+	/**
+	 * Validates if the logic is a valid one
+	 *
+	 * @param $logic
+	 *
+	 * @return bool
+	 */
+	protected function validateWhereLogic($logic)
+	{
+		return in_array($logic, self::$validWhereLogic);
+	}
 
-    protected function getDatabaseName($database)
-    {
-        $database = (!empty($database)) ? $database : $this->defaultDatabase;
-        //return $database;
-        return \Salvo\Barrage\Configuration::getRealDatabaseName($database);
-    }
+	protected function getDatabaseName($database)
+	{
+		$database = (!empty($database)) ? $database : $this->defaultDatabase;
+		//return $database;
+		return \Salvo\Barrage\Configuration::getRealDatabaseName($database);
+	}
 }

@@ -18,20 +18,20 @@ use Salvo\Barrage\DataSource\IDataSourceFactory;
  */
 class DataSourceFactory implements IDataSourceFactory
 {
-    /**
-     * @static
-     * @param $configurationName
-     * @return IDataSource
-     */
-    public static function buildFromConfiguration($configurationName)
-    {
-        //get the connection data object
-        $connectionData = ConnectionDataFactory::buildFromConfiguration($configurationName);
+	/**
+	 * @static
+	 * @param $configurationName
+	 * @return IDataSource
+	 */
+	public static function buildFromConfiguration($configurationName)
+	{
+		//get the connection data object
+		$connectionData = ConnectionDataFactory::buildFromConfiguration($configurationName);
 
-        //figure out which driver we need to build the data source object from
-        $dataSourceConfiguration = Configuration::getDataSourceConfiguration($configurationName);
-        $dataSourceClassName = 'Salvo\\Barrage\\DataSource\\Relational\\Driver\\' . $dataSourceConfiguration['driver'] . '\\' . 'DataSource';
+		//figure out which driver we need to build the data source object from
+		$dataSourceConfiguration = Configuration::getDataSourceConfiguration($configurationName);
+		$dataSourceClassName = 'Salvo\\Barrage\\DataSource\\Relational\\Driver\\' . $dataSourceConfiguration['driver'] . '\\' . 'DataSource';
 
-        return $dataSourceClassName::getInstance($connectionData);
-    }
+		return $dataSourceClassName::getInstance($connectionData);
+	}
 }

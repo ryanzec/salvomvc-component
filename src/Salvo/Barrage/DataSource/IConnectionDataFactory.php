@@ -15,11 +15,11 @@ namespace Salvo\Barrage\DataSource;
  */
 interface IConnectionDataFactory
 {
-    /**
-     * Returns a ConnectionData object built from a configuration
-     *
-     * @abstract
-     * @param $configurationName
-     */
-    public static function buildFromConfiguration($configurationName);
+	/**
+	 * Returns a ConnectionData object built from a configuration
+	 *
+	 * @abstract
+	 * @param $configurationName
+	 */
+	public static function buildFromConfiguration($configurationName);
 }
