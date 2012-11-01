@@ -76,9 +76,9 @@ class BaseController implements ControllerProviderInterface
 	 */
 	private $restFullModelName = null;
 
-	private $restObjectNameSingular = 'object';
+	private $restObjectNameSingular = 'data';
 
-	private $restObjectNamePlural = 'objects';
+	private $restObjectNamePlural = 'data';
 
 	/**
 	 * Sets up the controller configurations for Silex (like routing)
@@ -176,7 +176,7 @@ class BaseController implements ControllerProviderInterface
 
 	protected function resetRestObjectNameSingular()
 	{
-		$this->restObjectNameSingular = 'object';
+		$this->restObjectNameSingular = 'data';
 	}
 
 	protected function getRestObjectNameSingular($exceptionOnEmpty = true)
@@ -196,7 +196,7 @@ class BaseController implements ControllerProviderInterface
 
 	protected function resetRestObjectNamePlural()
 	{
-		$this->restObjectNamePlural = 'objects';
+		$this->restObjectNamePlural = 'data';
 	}
 
 	protected function getRestObjectNamePlural($exceptionOnEmpty = true)
@@ -397,7 +397,7 @@ class BaseController implements ControllerProviderInterface
 
 		$data = array
 		(
-			'object' => ($httpMethod !== 'DELETE') ? $user->toArray() : array()
+			$this->getRestObjectNameSingular() => ($httpMethod !== 'DELETE') ? $user->toArray() : array()
 		);
 
 		$method = 'render' . ucfirst($dataType);
