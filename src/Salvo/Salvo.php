@@ -168,13 +168,13 @@ class Salvo
 				$application['requested_controller'] = substr(ClassHelper::getNonNamespacedClass($controllerParts[0]), 0, -10);
 				$application['requested_action'] = substr($controllerParts[1], 0, -6);
 			}
-		}, 1100);
+		}, Application::LATE_EVENT);
 
 		//make sure the session is saved
 		$application->after(function($event) use ($application)
 		{
 			$application['session']->save();
-		}, -1100);
+		}, Application::LATE_EVENT - 100);
 
 		self::$application = $application;
 
