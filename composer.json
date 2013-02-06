@@ -15,12 +15,12 @@
 	"require":
 	{
 		"php": ">=5.3.2",
-		"monolog/monolog": "master",
+		"monolog/monolog": "1.3.1",
 		"silex/silex": "master",
-		"symfony/yaml": "master",
-		"twig/twig": "master",
-		"symfony/console": "master",
-		"symfony/browser-kit": "master"
+		"symfony/yaml": "v2.1.7",
+		"twig/twig": "v1.12.1",
+		"symfony/console": "v2.1.7",
+		"symfony/browser-kit": "v2.1.7"
 	},
 	"autoload":
 	{
