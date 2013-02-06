@@ -286,9 +286,15 @@ class BaseController implements ControllerProviderInterface
 	 *
 	 * @return string
 	 */
-	protected function renderJson($data = array())
+	protected function renderJson($data = array(), $jsonpCallback = null)
 	{
-		return $this->renderResponse(json_encode($data));
+		if(!empty($jsonpCallback)) {
+			$content = $jsonpCallback . '(' . json_encode($data) . ')';
+		} else {
+			$content = json_encode($data);
+		}
+
+		return $this->renderResponse($content);
 	}
 
 	/**
@@ -314,8 +320,15 @@ class BaseController implements ControllerProviderInterface
 		{
 			//todo: remove passing in the $request parameter manually
 			$data = $this->restData($request);
+			$jsonpCallback = false;
 
 			$queryData = RegexHelper::arrayUnderscoreKeyToCameCaseKey($data['queryData']);
+
+			if($queryData['callback']) {
+				$jsonpCallback = $queryData['callback'];
+				unset($queryData['callback']);
+			}
+
 			$limit = (!empty($queryData['limit']) && is_numeric($queryData['limit'])) ? $queryData['limit']  : null;
 			$offset = (!empty($queryData['offset']) && is_numeric($queryData['offset'])) ? $queryData['offset']  : 0;
 			$order = (!empty($queryData['order']) && is_array($queryData['order'])) ? $queryData['order']  : array();
@@ -330,7 +343,12 @@ class BaseController implements ControllerProviderInterface
 		}
 
 		$method = 'render' . ucfirst($dataType);
-		return $this->$method(array('status' => 'success', 'data' => $data));
+
+		if(!empty($jsonpCallback) && $method === 'renderJson') {
+			return $this->$method(array('status' => 'success', 'data' => $data), $jsonpCallback);
+		} else {
+			return $this->$method(array('status' => 'success', 'data' => $data));
+		}
 	}
 
 	protected function restData(Request $request)
@@ -348,7 +366,15 @@ class BaseController implements ControllerProviderInterface
 		{
 			foreach($queryData as $key => $value)
 			{
-				$queryData[$key] = urldecode($value);
+				if(!is_array($value)) {
+					$queryData[$key] = urldecode($value);
+				} else {
+					$queryData[$key] = array();
+
+					foreach($value as $k => $v) {
+						$queryData[$key][$k] = urldecode($v);
+					}
+				}
 			}
 
 			$return['queryData'] = $queryData;
